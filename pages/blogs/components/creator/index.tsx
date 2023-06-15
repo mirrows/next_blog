@@ -172,10 +172,10 @@ type Props = {
   onSubmit: (params: ArticalParams) => Promise<any>,
 }
 
-export default function BlogCreator({ artical: { title: defaultTitle, img: defaultImg, body }, onSubmit: fn }: Props) {
-  const [title, setTitle] = useState(defaultTitle)
-  const [content, setContent] = useState(body)
-  const [img, setImg] = useState<string>(defaultImg || '')
+export default function BlogCreator({ artical, onSubmit: fn }: Props) {
+  const [title, setTitle] = useState(artical?.title || '')
+  const [content, setContent] = useState(artical?.body || '')
+  const [img, setImg] = useState<string>(artical?.img || '')
   const parseMd = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value)
   }
@@ -196,8 +196,8 @@ export default function BlogCreator({ artical: { title: defaultTitle, img: defau
     })
   }
   useEffect(() => {
-    setImg(defaultImg || '')
-  }, [defaultImg])
+    setImg(artical?.img || '')
+  }, [artical])
   return (<DIV>
     <div className='wrap'>
       <div className='real_content_area'>
