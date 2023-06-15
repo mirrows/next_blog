@@ -13,7 +13,7 @@ export default function Error() {
       </Head>
       <main>
         未找到页面
-        <Link href="/">回到首页</Link>
+        <Link href="/" aria-label="back to homepage">回到首页</Link>
 
       </main>
     </>

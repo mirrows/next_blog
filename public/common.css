@@ -31,6 +31,30 @@ svg {
   cursor: pointer;
 }
 
+button{
+  transition: .3s;
+}
+button:hover{
+  box-shadow: 3px 3px 5px -1px #666;
+}
+
+
+table{
+  border-collapse:collapse;
+}
+.scroll_table{
+  width: 100%;
+  overflow-x: auto;
+}
+.scroll_table::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+/* 滚动条滑块 */
+.scroll_table::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #a5a5a5;
+}
 
 .ps_mask{
   position: fixed;
@@ -40,6 +64,7 @@ svg {
   right: 0;
   background-color: #fff;
   z-index: 66;
+  transition: .5s;
 }
 
 .loading_wrap{
@@ -48,7 +73,29 @@ svg {
   /* background-color: #000; */
 }
 
-img{
+img, svg{
   vertical-align: bottom;
 }
+
+img{
+  object-fit: cover;
+}
+
+.text_center{
+  text-align: center;
+}
+
+@media (max-width: 769px) {
+  .hide_769{
+    display: none !important;
+  }
+}
+
+@media (max-width: 450px) {
+  .hide_450{
+    display: none !important;
+  }
+}
+
+
 

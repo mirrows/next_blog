@@ -12,8 +12,36 @@ export type Preview = {
 export type BingPic = {
   url: string,
   title: string,
+  content: string,
   copyright: string,
   copyrightlink: string,
+  date: string,
+  [key: string]: any
+}
+
+export type Artical = {
+  id: number,
+  body: string,
+  title: string,
+  labels: [{ id: number, color: string, name: string }],
+  created_at: string,
+  updated_at: string,
+  state: string,
+  locked: boolean,
+  number: number,
+  img: string,
+  comments: number,
+}
+
+export type Comment = {
+  body: string,
+  id: string,
+  updatedAt: string,
+  author: {
+    avatarUrl: string,
+    login: string,
+    url: string,
+  }
 }
 
 export type GblData = {
@@ -23,5 +51,8 @@ export type GblData = {
   userInfo?: Partial<UserInfo>,
   preview?: Partial<Preview>,
   stayTime: number,
-  bing: BingPic[]
+  bing: BingPic[],
+  emit: Function,
+  isOwner: boolean,
+  [key: string]: any
 }

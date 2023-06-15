@@ -15,13 +15,8 @@ type Time = {
 
 
 const DIV = styled.div`
-  position: absolute;
-  top: 120px;
-  left: 0;
-  right:0;
-  width: fit-content;
-  max-width:100vw;
-  margin: auto;
+  position: relative;
+  margin: 0 auto;
   padding: 10px 0;
   z-index: 26;
   text-align:center;
@@ -48,10 +43,10 @@ const DIV = styled.div`
   }
   .tag_item{
     margin-right: 10px;
-    white-space: nowrap;
     .tag_value{
       font-size: 14px;
       font-weight: bold;
+      white-space: nowrap;
     }
   }
 `
@@ -62,6 +57,7 @@ export default function PreviewPannel() {
   const [totalStayTime, setTotalStayTime] = useState<number[]>([])
   const queryPreviewData = () => {
     visitorsData().then(res => {
+      if(!res) return;
       const preview = {
         ip: res.ip,
         data: res.data
@@ -83,7 +79,7 @@ export default function PreviewPannel() {
   }
   const intervalUntilNow = () => {
     const startTime = new Date(2023, 1, 2, 17, 58)
-    const now = new Date(2023, 3, 1, 17, 58)
+    const now = new Date()
     const lastMonthTotal = Math.round((new Date(
       startTime.getFullYear(),
       startTime.getMonth() + 1,

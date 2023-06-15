@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useRef } from "react";
+
 export const base64ToFile = (base64: string, fileName: string) => {
   let arr = base64.split(','),
     type = arr[0].match(/:(.*?);/)?.[1],
@@ -34,4 +36,59 @@ export const base64ToWebp = (base64: string, name: string, type = 'base64') => {
     // imageFileReader.readAsDataURL(file);
   })
 
+}
+
+export const useLazyImgs = (path?: string) => {
+  const domsRef = useRef<NodeListOf<any>>()
+  const imgListener = useCallback((path = 'lazy') => {
+    let realPath = 'lazy';
+    if (typeof path == 'string'){
+      // 有可能是wheel事件对象
+      realPath = path
+    }
+    const doms = domsRef.current || document.getElementsByTagName('img')
+    const list = Array.from(doms).filter(dom => dom.classList.contains(realPath))
+    // console.log([...doms].map(dom => dom.getBoundingClientRect().top))
+    const clientHeight = document.documentElement.clientHeight
+    const clientWidth = document.documentElement.clientWidth
+    const arr = [];
+    list.forEach((img, i) => {
+      if(
+        !(img.getBoundingClientRect().top < -img.clientHeight
+        || img.getBoundingClientRect().top > 1.5 * clientHeight)
+        && !(img.getBoundingClientRect().left < -clientWidth
+        || img.getBoundingClientRect().left > 1.5 * clientWidth)
+      ) {
+        img.dataset.src && img.setAttribute('src', img.dataset.src)
+        img.classList.remove('lazy')
+        arr.push(i)
+      }
+    })
+  }, [])
+
+  const debounce = (cb: Function, timeout = 300) => {
+    let timer: NodeJS.Timeout | null = null;
+    return (...props: any) => {
+      timer && clearTimeout(timer)
+      timer = setTimeout(cb.bind(this, ...props), timeout)
+    }
+  }
+
+  useEffect(() => {
+    
+    path && (domsRef.current = document.querySelectorAll(path))
+    imgListener();
+    const scroller = debounce(imgListener)
+    if (!path) {
+      window.addEventListener('scroll', scroller, true)
+      return () => {
+        window.removeEventListener('scroll', scroller, true)
+      }
+    }
+  }, [imgListener])
+
+
+  return {
+    emit: imgListener
+  }
 }

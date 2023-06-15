@@ -10,6 +10,15 @@ const gbData: GblData = {
   preview: {},
   stayTime: 0,
   bing: [],
+  isOwner: false,
+  emit: () => {}
+}
+
+export const env = {
+  messUrl: process.env.NEXT_PUBLIC_MESS_URL,
+  user: process.env.NEXT_PUBLIC_GITHUB_USER,
+  clientID: process.env.NEXT_PUBLIC_CLIENT_ID,
+  loadingGif: process.env.NEXT_PUBLIC_LOADING_GIF,
 }
 
 export const stone = {
@@ -19,17 +28,32 @@ export const stone = {
   },
   set(newData: Partial<typeof gbData>) {
     this.data = { ...this.data, ...newData };
+  },
+  on(name: string, cb: Function) {
+    this.data[`event_${name}`] || (this.data[`event_${name}`] = [])
+    if(typeof cb === 'function') {
+      this.data[`event_${name}`].push(cb)
+    }
+  },
+  async emit(name: string, ...props: any) {
+    const events = this.data[`event_${name}`].filter((e: boolean) => e)
+    if(!events?.length) return
+    for(let i = 0; i < events.length; i++) {
+      await events[i](...props)
+    }
   }
 }
 
 if (typeof window !== "undefined") {
-  if (sessionStorage.tmpData) {
-    stone.set(JSON.parse(sessionStorage.tmpData))
-    sessionStorage.removeItem('tmpData')
+  if (localStorage.tmpData) {
+    console.log(localStorage.tmpData && JSON.parse(localStorage.tmpData))
+    stone.set(JSON.parse(localStorage.tmpData))
+    // localStorage.removeItem('tmpData')
   }
 
   window.addEventListener('beforeunload', () => {
-    sessionStorage.setItem('tmpData', JSON.stringify(stone.data))
+    localStorage.setItem('tmpData', JSON.stringify(stone.data))
+    console.log(localStorage.tmpData && JSON.parse(localStorage.tmpData))
   })
 }
 
