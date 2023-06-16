@@ -1,3 +1,4 @@
+import DateText from '@/components/SsrRender/Timer'
 import { about, addComment, queryComments } from '@/req/about'
 import { Artical, Comment } from '@/types/global'
 import { stone } from '@/utils/global'
@@ -315,7 +316,10 @@ export default function About({ artical: atl, comments: cmts }: Props) {
                   <img className='avator' src={comment.author.avatarUrl} alt="" />
                   <div>
                     <div>{comment.author.login}</div>
-                    <div className='text_small'>{new Date(comment.updatedAt).toLocaleString()}</div>
+                    <DateText
+                      render={(formattedDate) => <div className='text_small'>{formattedDate}</div>}
+                      value={comment.updatedAt}
+                    />
                   </div>
                 </div>
                 <div className='comment_detail_wrap'>
