@@ -16,6 +16,7 @@ import { useLazyImgs } from '@/utils/imgTool';
 import { env, stone } from '@/utils/global';
 import { UserInfo } from '@/types/github';
 import { useRouter } from 'next/router';
+import DateText from '@/components/SsrRender/Timer';
 
 const Div = styled.div`
   min-height: 100vh;
@@ -325,7 +326,12 @@ export default function Home({ bing, artical }: Props) {
                       <span>{artical.title}</span>
                     </h3>
                     <div className='artical_detail hide_450'>{artical.body}</div>
-                    <span className='artical_update_time'>—— updated at {new Date(artical.updated_at).toLocaleString()}</span>
+                    <span className='artical_update_time'>—— updated at 
+                      <DateText
+                        render={(formattedDate) => <span>{formattedDate}</span>}
+                        value={artical.updated_at}
+                      />
+                    </span>
                   </div>
                   <LazyImage className='artical_img' src={artical.img} alt={artical.title} />
                 </div>
@@ -343,7 +349,7 @@ export default function Home({ bing, artical }: Props) {
                   </button>
                 </div>
                 <div className="bing_card">
-                  {/* <h3 className='bing_msg_title'>{pics[ind].title}<div className='time'>——{pics[ind].date}</div></h3> */}
+                  <h3 className='bing_msg_title'>{pics[ind].title}<div className='time'>——{pics[ind].date}</div></h3>
                   <div className='bing_msg_content'>{pics[ind].content}</div>
                   <a className="copyright" href={pics[ind].copyrightlink} aria-label='more message about this bing image' target="_blank">{pics[ind].copyright}</a>
                 </div>
