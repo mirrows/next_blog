@@ -1,6 +1,7 @@
 import { GblData } from "@/types/global";
 import { useRef } from "react";
 import { deepClone } from "./common";
+import { NormalObj } from "@/types/common";
 
 const gbData: GblData = {
   number: 0,
@@ -23,6 +24,7 @@ export const env = {
 
 export const stone = {
   data: { ...gbData },
+  events: {} as NormalObj<Function[]>,
   get(key: keyof typeof gbData) {
     return deepClone(this.data[key]);
   },
@@ -30,13 +32,13 @@ export const stone = {
     this.data = { ...this.data, ...newData };
   },
   on(name: string, cb: Function) {
-    this.data[`event_${name}`] || (this.data[`event_${name}`] = [])
+    this.events[`event_${name}`] || (this.events[`event_${name}`] = [])
     if(typeof cb === 'function') {
-      this.data[`event_${name}`].push(cb)
+      this.events[`event_${name}`].push(cb)
     }
   },
   async emit(name: string, ...props: any) {
-    const events = this.data[`event_${name}`].filter((e: boolean) => e)
+    const events = this.events[`event_${name}`]?.filter((e: Function) => !!e) || []
     if(!events?.length) return
     for(let i = 0; i < events.length; i++) {
       await events[i](...props)

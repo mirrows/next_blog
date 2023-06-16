@@ -1,4 +1,4 @@
-import { visitorsData } from "@/req/main"
+import { ipQuery, visitorsData } from "@/req/main"
 import { Preview } from "@/types/global"
 import { stone } from "@/utils/global"
 import { useEffect, useState } from "react"
@@ -56,15 +56,19 @@ export default function PreviewPannel() {
   const [stayTime, setStayTime] = useState(0)
   const [totalStayTime, setTotalStayTime] = useState<number[]>([])
   const queryPreviewData = () => {
-    visitorsData().then(res => {
-      if(!res) return;
-      const preview = {
-        ip: res.ip,
-        data: res.data
-      }
-      setPreview(preview)
-      stone.set({ preview })
-    })
+    if(stone.data.preview) {
+      setPreview(stone.data.preview)
+    } else {
+      stone.on('ip', ({ data, detail }: any) => {
+        if(!data) return;
+        const preview = {
+          ip: detail?.ip,
+          data: data.data,
+        }
+        setPreview(preview)
+        stone.set({ preview })
+      })
+    }
   }
   const setDate = (dateObj: Date, options: Partial<Time>) => {
     const { year, month, date, hour, minute, secend } = options;

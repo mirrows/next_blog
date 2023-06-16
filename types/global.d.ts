@@ -6,7 +6,7 @@ export type Preview = {
     total: number,
     today: number,
     visitorTime: number,
-  }
+  },
 }
 
 export type BingPic = {

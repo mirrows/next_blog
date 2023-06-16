@@ -3,7 +3,7 @@ import { NormalObj, Prettify } from "@/types/common";
 import { githubApi, query } from "@/utils/api";
 import { stone } from "@/utils/global";
 
-export const queryGithubToken = (data: NormalObj) => {
+export const queryGithubToken = (data: NormalObj<any>) => {
   return query({
     path: '/github/token',
     method: 'POST',
@@ -21,6 +21,14 @@ export const dictQuery = (w: string) => {
     query: { w }
   })
 }
+
+export const ipQuery = () => {
+  console.log(5675)
+  return query({
+    path: '/ip',
+  })
+}
+
 
 export const listArtical = (number?: number) => {
   return query({
@@ -57,17 +65,18 @@ export const bingQuery = (n = 7) => {
   })
 }
 
-export const statisticVisitor = (time = 0) => {
+export const statisticVisitor = (ip: string, time = 0) => {
   return query({
     path: '/visitor',
     method: 'post',
-    params: { time },
+    params: { time, ip },
     keepalive: true,
   })
 }
 
-export const visitorsData = () => {
+export const visitorsData = (ip: string) => {
   return query({
     path: '/visitor',
+    query: { ip },
   })
 }
