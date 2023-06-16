@@ -343,7 +343,7 @@ export default function Home({ bing, artical }: Props) {
                   </button>
                 </div>
                 <div className="bing_card">
-                  <h3 className='bing_msg_title'>{pics[ind].title}<div className='time'>——{pics[ind].date}</div></h3>
+                  {/* <h3 className='bing_msg_title'>{pics[ind].title}<div className='time'>——{pics[ind].date}</div></h3> */}
                   <div className='bing_msg_content'>{pics[ind].content}</div>
                   <a className="copyright" href={pics[ind].copyrightlink} aria-label='more message about this bing image' target="_blank">{pics[ind].copyright}</a>
                 </div>
