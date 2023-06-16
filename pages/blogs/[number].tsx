@@ -1,5 +1,6 @@
 import LazyImage from '@/components/LazyImage'
 import SVGIcon from '@/components/SVGIcon'
+import DateText from '@/components/SsrRender/Timer'
 import { about, addComment, queryComments } from '@/req/about'
 import { listArtical } from '@/req/main'
 import { UserInfo } from '@/types/github'
@@ -322,7 +323,12 @@ export default function Blog({ artical: atl, comments: cmts }: Props) {
             <div className='blog_wrap'>
               <h1>{artical.title}</h1>
               <div className='text_small'>
-                <span className='atl_base_msg'>创建时间：{new Date(artical.created_at).toLocaleDateString()}</span>
+                <span className='atl_base_msg'>创建时间：
+                  <DateText
+                    render={(formattedDate) => <span>{formattedDate}</span>}
+                    value={artical.created_at}
+                  />
+                </span>
                 <span className='atl_base_msg'>评论数：{artical.comments}</span>
               </div>
               <LazyImage className='atl_bg' src={artical.img} alt={artical.title} />
@@ -349,7 +355,10 @@ export default function Blog({ artical: atl, comments: cmts }: Props) {
                     <LazyImage className='avator' src={comment.author.avatarUrl} alt="" />
                     <div>
                       <div>{comment.author.login}</div>
-                      <div className='text_small'>{new Date(comment.updatedAt).toLocaleString()}</div>
+                      <DateText
+                        render={(formattedDate) => <div className='text_small'>{formattedDate}</div>}
+                        value={comment.updatedAt}
+                      />
                     </div>
                   </div>
                   <div className='comment_detail_wrap'>
