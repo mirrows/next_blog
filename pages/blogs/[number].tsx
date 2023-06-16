@@ -1,7 +1,7 @@
 import LazyImage from '@/components/LazyImage'
 import SVGIcon from '@/components/SVGIcon'
 import DateText from '@/components/SsrRender/Timer'
-import { about, addComment, queryComments } from '@/req/about'
+import { addComment, queryComments } from '@/req/about'
 import { listArtical } from '@/req/main'
 import { UserInfo } from '@/types/github'
 import { Artical, Comment } from '@/types/global'
