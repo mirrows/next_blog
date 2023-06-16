@@ -1,6 +1,25 @@
+import LazyImage from '@/components/LazyImage'
 import Head from 'next/head'
 import Link from 'next/link'
+import styled from 'styled-components'
 
+const DIV = styled.div`
+  &.wrap{
+    width: fit-content;
+    margin: 10vh auto;
+    text-align: center;
+  }
+  .img{
+    max-width: 100%;
+  }
+  .back{
+    display: block;
+    text-shadow: 0 0 10px gray;
+    font-weight: bold;
+    font-size: 6vh;
+    color: #fff
+  }
+`
 
 export default function Error() {
   return (
@@ -12,9 +31,10 @@ export default function Error() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        未找到页面
-        <Link href="/" aria-label="back to homepage">回到首页</Link>
-
+        <DIV className='wrap'>
+          <LazyImage className='img' src='https://miro.medium.com/v2/resize:fit:1400/1*zE2qnVTJehut7B8P2aMn3A.gif' />
+          <Link href="/" className='back' aria-label="back to homepage">BACK</Link>
+        </DIV>
       </main>
     </>
   )
