@@ -196,6 +196,7 @@ export default function BlogCreator({ artical, onSubmit: fn }: Props) {
     })
   }
   useEffect(() => {
+    console.log(artical)
     setImg(artical?.img || '')
   }, [artical])
   return (<DIV>
