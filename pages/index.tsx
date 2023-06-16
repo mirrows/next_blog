@@ -371,7 +371,8 @@ export default function Home({ bing, artical }: Props) {
 
 type Props = {
   bing?: BingPic[],
-  artical?: Artical[]
+  artical?: Artical[],
+  total?: number
 }
 
 export const getServerSideProps = async (context: any) => {
@@ -401,6 +402,7 @@ export const getServerSideProps = async (context: any) => {
   if (articals.status === 'fulfilled' && articals.value?.data) {
     const data = articals.value.data
     props.artical = data
+    props.total = articals.value.total
   }
   return {
     props
