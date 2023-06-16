@@ -3,7 +3,7 @@ import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 // import Swiper core and required modules
-import { Swiper as MySwiper, SwiperSlide, useSwiper } from 'swiper/react';
+import { Swiper as MySwiper, SwiperSlide } from 'swiper/react';
 import PreviewPannel from '@/components/PreviewPannel';
 import { Artical, BingPic } from '@/types/global';
 // Import Swiper styles
@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useLazyImgs } from '@/utils/imgTool';
 import { env, stone } from '@/utils/global';
 import { UserInfo } from '@/types/github';
+import { useRouter } from 'next/router';
 
 const Div = styled.div`
   min-height: 100vh;
@@ -274,6 +275,7 @@ export default function Home({ bing, artical }: Props) {
     setInd(realIndex)
     emit()
   }
+  const router = useRouter();
   useEffect(() => {
     if (stone.data.userInfo?.login) {
       setOwner(stone.data.userInfo.login === env.user)
@@ -311,7 +313,7 @@ export default function Home({ bing, artical }: Props) {
           <div className='main_content'>
             <div className='content_left'>
               {articals.map((artical) => (
-                <Link key={artical.id} className="artical_wrap" href={`/blogs/${artical.number}`} aria-label={artical.title}>
+                <div key={artical.id} className="artical_wrap" onClick={() => router.push(`/blogs/${artical.number}`)}>
                   <div className='artical_content'>
                     <h3 className='artical_title'>
                       {isOwner && (
@@ -326,7 +328,7 @@ export default function Home({ bing, artical }: Props) {
                     <span className='artical_update_time'>—— updated at {new Date(artical.updated_at).toLocaleString()}</span>
                   </div>
                   <LazyImage className='artical_img' src={artical.img} alt={artical.title} />
-                </Link>
+                </div>
               ))}
             </div>
             <div className='content_right'>

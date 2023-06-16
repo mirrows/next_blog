@@ -158,7 +158,7 @@ const BlogContent = styled.div`
   .comments_wrap{
     display: flex;
     flex-direction: column;
-    min-width: 200px;
+    min-width: 240px;
     margin: 5px;
     position: sticky;
     top: 40px;

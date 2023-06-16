@@ -203,7 +203,7 @@ export default function BlogCreator({ artical, onSubmit: fn }: Props) {
       <div className='real_content_area'>
         <h1>{title}</h1>
         <div className='text_small'>
-          <span className='atl_base_msg'>创建时间：{new Date().toLocaleDateString()}</span>
+          <span className='atl_base_msg'>创建时间：{new Date(artical.created_at || '').toLocaleDateString()}</span>
         </div>
         <LazyImage className='atl_bg' src={img} alt={title} />
         <div className="blog_content" dangerouslySetInnerHTML={{ __html: parseBody(xss(marked.parse(content || '')), ['lazyImg']) }}></div>
