@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 
 interface IDateTextProps {
-  value: string;
+  value?: string;
   render: (stringDate: string) => JSX.Element;
 }
 const DateText: React.FC<IDateTextProps> = ({ value, render }) => {
   const [date, setDate] = useState(value);
   useEffect(() => {
-    setDate(new Date(value).toLocaleString());
+    setDate((value ? new Date(value) : new Date()).toLocaleString());
   }, [value]);
-  return render(date);
+  return render(date || '');
 };
 
 export default DateText;
