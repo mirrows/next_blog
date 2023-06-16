@@ -33,9 +33,7 @@ export const stone = {
   },
   on(name: string, cb: Function) {
     this.events[`event_${name}`] || (this.events[`event_${name}`] = [])
-    if(typeof cb === 'function') {
-      this.events[`event_${name}`].push(cb)
-    }
+    this.events[`event_${name}`].push(cb)
   },
   async emit(name: string, ...props: any) {
     const events = this.events[`event_${name}`]?.filter((e: Function) => !!e) || []
@@ -48,9 +46,8 @@ export const stone = {
 
 if (typeof window !== "undefined") {
   if (localStorage.tmpData) {
-    console.log(localStorage.tmpData && JSON.parse(localStorage.tmpData))
     stone.set(JSON.parse(localStorage.tmpData))
-    // localStorage.removeItem('tmpData')
+    localStorage.removeItem('tmpData')
   }
 
   window.addEventListener('beforeunload', () => {
