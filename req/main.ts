@@ -1,6 +1,6 @@
 import { ArticalParams } from "@/types/blogs";
-import { NormalObj, Prettify } from "@/types/common";
-import { githubApi, query } from "@/utils/api";
+import { NormalObj } from "@/types/common";
+import { githubApi, query, req } from "@/utils/api";
 import { stone } from "@/utils/global";
 
 export const queryGithubToken = (data: NormalObj<any>) => {
@@ -23,9 +23,8 @@ export const dictQuery = (w: string) => {
 }
 
 export const ipQuery = () => {
-  console.log(5675)
-  return query({
-    path: '/ip',
+  return req({
+    path: 'https://ip.useragentinfo.com/json',
   })
 }
 

@@ -1,4 +1,3 @@
-import { ipQuery, visitorsData } from "@/req/main"
 import { Preview } from "@/types/global"
 import { stone } from "@/utils/global"
 import { useEffect, useState } from "react"

@@ -28,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
     // if (process.env.NODE_ENV !== 'production') return
     let detail = sessionStorage.detail
     if(!detail) {
-      const { data } = await ipQuery()
+      const data = await ipQuery()
       detail = data
       setIp(detail.ip)
       sessionStorage.setItem('detail', JSON.stringify(detail))
@@ -36,7 +36,7 @@ export default function App({ Component, pageProps }: AppProps) {
       try {
         detail = JSON.parse(detail)
       } catch {
-        const { data } = await ipQuery()
+        const data = await ipQuery()
         detail = data
         setIp(detail.ip)
         sessionStorage.setItem('detail', JSON.stringify(detail))
