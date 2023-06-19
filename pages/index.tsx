@@ -314,14 +314,19 @@ export default function Home({ bing, artical }: Props) {
           <div className='main_content'>
             <div className='content_left'>
               {articals.map((artical) => (
-                <div key={artical.id} className="artical_wrap" onClick={() => router.push(`/blogs/${artical.number}`)}>
+                <Link key={artical.id} aria-label={`artical detail about ${artical.title}`} className="artical_wrap" href={`/blogs/${artical.number}`}>
                   <div className='artical_content'>
                     <h3 className='artical_title'>
                       {isOwner && (
-                        <object><Link className='artical_btn' aria-label={`edit artical about ${artical.title}`} href={`/blogs/edit/${artical.number}`}>
+                        <span
+                          className='artical_btn'
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push(`/blogs/edit/${artical.number}`)
+                          }}
+                        >
                           <SVGIcon type='edit' className="atl_icon" />
-                        </Link>
-                        </object>
+                        </span>
                       )}
                       <span>{artical.title}</span>
                     </h3>
@@ -334,7 +339,7 @@ export default function Home({ bing, artical }: Props) {
                     </span>
                   </div>
                   <LazyImage className='artical_img' src={artical.img} alt={artical.title} />
-                </div>
+                </Link>
               ))}
             </div>
             <div className='content_right'>

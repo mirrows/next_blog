@@ -107,6 +107,7 @@ const NavHeader = () => {
   }
   const queryCurUser = () => {
     queryUser().then(data => {
+      console.log('userInfo: ', data);
       if(!data.id) return;
       stone.set({ userInfo: data, isOwner: data.login === env.user })
       setUser(data)
@@ -120,6 +121,11 @@ const NavHeader = () => {
       queryToken(query.code);
     } else {
       if (!stone.data.token) return;
+      if (stone.data.userInfo?.login) {
+        setUser(stone.data.userInfo as UserInfo)
+        stone.set({ userInfo: stone.data.userInfo, isOwner: stone.data.userInfo.login === env.user })
+        return
+      }
       queryCurUser();
     }
   }, [])
