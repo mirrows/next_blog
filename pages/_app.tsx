@@ -30,7 +30,6 @@ export default function App({ Component, pageProps }: AppProps) {
     if(!detail) {
       const data = await ipQuery()
       detail = data
-      setIp(detail.ip)
       sessionStorage.setItem('detail', JSON.stringify(detail))
     } else {
       try {
@@ -38,10 +37,10 @@ export default function App({ Component, pageProps }: AppProps) {
       } catch {
         const data = await ipQuery()
         detail = data
-        setIp(detail.ip)
         sessionStorage.setItem('detail', JSON.stringify(detail))
       }
     }
+    setIp(detail.ip)
     const data = await visitorsData(detail.ip)
     const preview = {
       ip: detail?.ip,
