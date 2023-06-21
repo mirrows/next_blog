@@ -56,7 +56,6 @@ export default function PreviewPannel() {
   const [totalStayTime, setTotalStayTime] = useState<number[]>([])
   const queryPreviewData = () => {
     stone.on('ip', ({ data, detail }: any) => {
-      console.log(data, detail)
       if(!data) return;
       const preview = {
         ip: detail?.ip,

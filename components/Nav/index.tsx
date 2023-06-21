@@ -107,7 +107,6 @@ const NavHeader = () => {
   }
   const queryCurUser = () => {
     queryUser().then(data => {
-      console.log('userInfo: ', data);
       if(!data.id) return;
       stone.set({ userInfo: data, isOwner: data.login === env.user })
       setUser(data)
