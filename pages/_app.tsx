@@ -2,7 +2,7 @@ import NavHeader from '@/components/Nav'
 import { ipQuery, statisticVisitor, visitorsData } from '@/req/main'
 import { stone } from '@/utils/global'
 import type { AppProps } from 'next/app'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import '../public/common.css';
 import { marked } from 'marked'
@@ -23,12 +23,12 @@ const Div = styled.div`
 `
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [ip, setIp] = useState('')
   const statistics = async () => {
     // if (process.env.NODE_ENV !== 'production') return
     let detail = sessionStorage.detail
     if(!detail) {
       const data = await ipQuery()
+      console.log(6669)
       detail = data
       sessionStorage.setItem('detail', JSON.stringify(detail))
     } else {
@@ -36,11 +36,12 @@ export default function App({ Component, pageProps }: AppProps) {
         detail = JSON.parse(detail)
       } catch {
         const data = await ipQuery()
+        console.log(6657)
         detail = data
         sessionStorage.setItem('detail', JSON.stringify(detail))
       }
     }
-    setIp(detail.ip)
+    console.log(4545, detail.ip)
     const data = await visitorsData(detail.ip)
     const preview = {
       ip: detail?.ip,
@@ -51,7 +52,8 @@ export default function App({ Component, pageProps }: AppProps) {
   }
   const stayTime = useRef(0)
   const visitorStatistic = () => {
-    statisticVisitor(ip, stayTime.current)
+    const ip = stone.data.preview?.ip
+    ip && statisticVisitor(ip, stayTime.current)
     stayTime.current = 0
   }
   const router = useRouter();
