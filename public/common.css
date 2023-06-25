@@ -122,5 +122,9 @@ img{
   z-index: 99;
 }
 
+.no-pointer{
+  pointer-events: none;
+}
+
 
 

@@ -49,6 +49,7 @@ const DIV = styled.div`
         max-height: 400px;
         width: 70vw;
         height: 70vw;
+        border-radius: 50%;
     }
     .line{
         position: absolute;
@@ -72,6 +73,7 @@ const DIV = styled.div`
         border-radius: 30%;
         overflow: hidden;
         transform-origin: 50% min(32vw, 190px);
+        cursor: pointer;
     }
     .rate_table{
         position: fixed;
@@ -97,6 +99,10 @@ const DIV = styled.div`
         }
         input[type="text"]{
             width: 100px;
+            padding: 5px;
+            border-radius: 4px;
+            border: none;
+            outline: none;
         }
     }
     .table_switch{
@@ -154,6 +160,35 @@ const DIV = styled.div`
         border: 2px dashed;
         border-radius: 6px;
     }
+    
+    .sector_wrap{
+        overflow: hidden;
+        .sector_item{
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            transform-origin: bottom right;
+            cursor: pointer;
+            transition: .3s;
+            box-sizing: border-box;
+        }
+        .sector_item:before{
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .sector_item:hover{
+            padding: 10px;
+        }
+        .sector_item:hover:before{
+            background-color: rgba(225,225,225, .5);
+            box-shadow: 0 0 20px #cccccc;
+        }
+    }
 `
 
 export default function Lottery () {
@@ -171,15 +206,16 @@ export default function Lottery () {
         { name: 't5', checked: true, img: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687162737072848.png', target: '', percent: 0.2 },
         { name: 't6', checked: true, img: 'https://empty.t-n.top/pub_lic/2023_05_31/pic1685527382597218.png', target: '', percent: 0.15 },
     ])
+    const [emptyName, setEmptyName] = useState('empty')
     const empty = useMemo(() => {
         const percent = areas.filter(e => e.checked).map(e => e.percent).reduce((pre, cur) => +(pre - cur).toFixed(4), 1)
         return percent > 0 ? [{
-            name: 'empty',
+            name: emptyName,
             img: 'https://empty.t-n.top/pub_lic/2023_06_21/pic1687315603128458.png',
             target: '',
             percent,
         }] : []
-    }, [areas])
+    }, [areas, emptyName])
     const startRotate = () => {
         if(rotate) return;
         setDeg(deg => deg % 360)
@@ -194,8 +230,12 @@ export default function Lottery () {
     }
     const handleTable = (ind: number, attr: string, val: string | boolean | number) => {
         const data = JSON.parse(JSON.stringify(areas))
-        data[ind][attr] = val
-        setArea(data);
+        if(ind === data.length) {
+            setEmptyName(val as string)
+        } else {
+            data[ind][attr] = val
+            setArea(data);
+        }
     }
     const belongArea = useCallback(() => {
         let belong = Math.random();
@@ -209,7 +249,7 @@ export default function Lottery () {
         setArea((areas) => {
             const res = JSON.parse(JSON.stringify(areas))
             res.push({
-                name: `t${demo.current}`,
+                name: emptyName !== 'empty' ? emptyName : `t${demo.current}`,
                 checked: true,
                 img: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687162882486612.png',
                 target: '', 
@@ -217,6 +257,7 @@ export default function Lottery () {
             })
             return res
         })
+        setEmptyName('empty')
         demo.current++
     }
     const delArea = (i: number) => {
@@ -246,7 +287,12 @@ export default function Lottery () {
         </Head>
         <DIV>
             <LazyImage className="lottery_bg" src="https://empty.t-n.top/pub_lic/2023_06_19/pic1687141057059729.png" />
-            <div className="line_wrap lottery_bg">
+            <div className="line_wrap lottery_bg sector_wrap">
+                {[...areas.filter(e => e.checked), ...empty].map((_, ind, total) => (
+                    total.length > 1 && <div key={ind} className="sector_item" style={{transform: `scale(0.8) rotate(${360 / total.length * (ind - 0.5) + 90}deg) skew(${90 - 360 / total.length}deg)`}}></div>
+                ))}
+            </div>
+            <div className="line_wrap lottery_bg no-pointer">
                 {[...areas.filter(e => e.checked), ...empty].map((item, ind, total) => (
                     <LazyImage
                         key={ind}
@@ -256,7 +302,7 @@ export default function Lottery () {
                     />
                 ))}
             </div>
-            <div className="line_wrap lottery_bg">
+            <div className="line_wrap lottery_bg no-pointer">
                 {[...areas.filter(e => e.checked), ...empty].map((_, ind, total) => (
                     total.length > 1 && <div key={ind} className="line" style={{ transform: `translateY(-50%) rotate(${360 / total.length * (ind + 0.5)}deg)` }}></div>
                 ))}
@@ -293,10 +339,10 @@ export default function Lottery () {
                                     <td>{
                                         'checked' in item && typeof item.checked === "boolean" ? 
                                         (<input type="checkbox" name="" defaultChecked={item.checked} id="" onChange={(e) => handleTable(ind, 'checked', e.target.checked)} />) : 
-                                        (<SVGIcon type="plus" style={{ fill: '#fff' }} onClick={addArea} />)
+                                        ( total.length < 10 ? <SVGIcon type="plus" style={{ fill: '#fff' }} onClick={addArea} /> : '')
                                     }</td>
                                     <td><input type="text" value={item.name} onChange={(e) => handleTable(ind, 'name', e.target.value)} /></td>
-                                    <td><input type="text" {...('checked' in item ? {} : {readOnly: true})} value={item.percent} onChange={(e) => handleTable(ind, 'percent', e.target.value)} onBlur={(e) => changePower(e, ind)} /></td>
+                                    <td><input type="text" {...('checked' in item ? {} : {readOnly: true, disabled: true})} value={item.percent} onChange={(e) => handleTable(ind, 'percent', e.target.value)} onBlur={(e) => changePower(e, ind)} /></td>
                                     <td>{'checked' in item && total.length > 2 ? <SVGIcon type="trash" style={{ fill: '#fff' }} width="16" onClick={() => delArea(ind)} /> : ''}</td>
                                 </tr>))}
                             </tbody>
