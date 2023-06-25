@@ -111,18 +111,18 @@ export default function Lottery () {
     const [deg, setDeg] = useState(0)
     const [table, setTable] = useState(true)
     const [areas, setArea] = useState([
-        { name: 't1', checked: true, img: 'https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_06_19/pic1687162882486612.png', target: '', percent: 0.1 },
-        { name: 't2', checked: true, img: 'https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_05_31/pic1685527384699939.png', target: '', percent: 0.05 },
-        { name: 't3', checked: true, img: 'https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_05_31/pic1685527386794892.png', target: '', percent: 0.4 },
-        { name: 't4', checked: true, img: 'https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_06_19/pic1687162735145513.png', target: '', percent: 0.1 },
-        { name: 't5', checked: true, img: 'https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_06_19/pic1687162737072848.png', target: '', percent: 0.2 },
-        { name: 't6', checked: true, img: 'https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_05_31/pic1685527382597218.png', target: '', percent: 0.15 },
+        { name: 't1', checked: true, img: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687162882486612.png', target: '', percent: 0.1 },
+        { name: 't2', checked: true, img: 'https://empty.t-n.top/pub_lic/2023_05_31/pic1685527384699939.png', target: '', percent: 0.05 },
+        { name: 't3', checked: true, img: 'https://empty.t-n.top/pub_lic/2023_05_31/pic1685527386794892.png', target: '', percent: 0.4 },
+        { name: 't4', checked: true, img: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687162735145513.png', target: '', percent: 0.1 },
+        { name: 't5', checked: true, img: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687162737072848.png', target: '', percent: 0.2 },
+        { name: 't6', checked: true, img: 'https://empty.t-n.top/pub_lic/2023_05_31/pic1685527382597218.png', target: '', percent: 0.15 },
     ])
     const empty = useMemo(() => {
         const percent = areas.filter(e => e.checked).map(e => e.percent).reduce((pre, cur) => +(pre - cur).toFixed(4), 1)
         return percent > 0 ? [{
             name: 'empty',
-            img: 'https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_06_21/pic1687315603128458.png',
+            img: 'https://empty.t-n.top/pub_lic/2023_06_21/pic1687315603128458.png',
             target: '',
             percent,
         }] : []
@@ -157,7 +157,7 @@ export default function Lottery () {
             res.push({
                 name: '',
                 checked: true,
-                img: 'https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_06_19/pic1687162882486612.png',
+                img: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687162882486612.png',
                 target: '', 
                 percent: empty[0].percent
             })
@@ -189,7 +189,7 @@ export default function Lottery () {
             <title>抽奖</title>
         </Head>
         <DIV>
-            <LazyImage className="lottery_bg" src="https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_06_19/pic1687141057059729.png" />
+            <LazyImage className="lottery_bg" src="https://empty.t-n.top/pub_lic/2023_06_19/pic1687141057059729.png" />
             <div className="line_wrap lottery_bg">
                 {[...areas.filter(e => e.checked), ...empty].map((item, ind, total) => (
                     <LazyImage
@@ -215,10 +215,10 @@ export default function Lottery () {
             >
                 <LazyImage
                     className="pointer"
-                    src="https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_06_21/pic1687328567823851.png"
+                    src="https://empty.t-n.top/pub_lic/2023_06_21/pic1687328567823851.png"
                 />
             </div>
-            <LazyImage className="lottery_bg start_btn" src="https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_06_21/pic1687328322726591.webp" onClick={startRotate} />
+            <LazyImage className="lottery_bg start_btn" src="https://empty.t-n.top/pub_lic/2023_06_21/pic1687328322726591.webp" onClick={startRotate} />
             <div className="rate_table">
                 <div className="table_wrap" style={{ scale: table ? '1' : '0' }}>
                     <table>

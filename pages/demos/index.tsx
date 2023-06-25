@@ -61,7 +61,7 @@ export default function Demos() {
   const [list] = useState([
     {
       name: '抽奖模型',
-      icon: 'https://cdn.jsdelivr.net/gh/huaasto/empty@master/pub_lic/2023_06_19/pic1687153304035427.png',
+      icon: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687153304035427.png',
       link: '/demos/lottery',
     }
   ])
