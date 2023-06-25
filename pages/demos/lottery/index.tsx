@@ -1,7 +1,8 @@
 import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
+import TriggerBtn from "@/components/TriggerBtn"
 import Head from "next/head"
-import { FocusEvent, useCallback, useEffect, useMemo, useState } from "react"
+import { FocusEvent, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import styled from "styled-components"
 
 const DIV = styled.div`
@@ -88,6 +89,12 @@ const DIV = styled.div`
         color: #fff;
         transform-origin: 100% 100%;
         transition: .3s;
+        &.modal-active{
+            transform: scale(1);
+        }
+        &.modal-hide{
+            transform: scale(0);
+        }
         input[type="text"]{
             width: 100px;
         }
@@ -95,21 +102,67 @@ const DIV = styled.div`
     .table_switch{
         position: relative;
         z-index: 6;
-    }
-    .table_switch.light_switch{
-        fill: #fff;
+        &.modal-active{
+            fill: #fff;
+        }
     }
     input[readonly] {
         background-color: inherit;
         border: none;
         color: #fff;
     }
+    .modal_wrap{
+        position: fixed;
+        top: 50%;
+        left: 0;
+        right: 0;
+        max-width: 40%;
+        min-width: 240px;
+        margin: auto;
+        transform: translateY(-50%);
+        text-align: center;
+    }
+    .con_img{
+        position: relative;
+        bottom: -16px;
+        width: 160px;
+        z-index: 1;
+    }
+    .modal_content{
+        position: relative;
+        width: fit-content;
+        min-widtH: 160px;
+        max-widtH: 240px;
+        padding: 10px 32px;
+        background-color: #ff3030;
+        border-radius: 12px;
+        border: 4px solid;
+        margin: auto;
+        word-break: break-all;
+        font-size: 2.5rem;
+        font-weight: bold;
+        font-family: youyuan;
+        color: #ffc788;
+    }
+    .modal_content:after{
+        content: '';
+        position: absolute;
+        top: 2px;
+        bottom: 2px;
+        left: 2px;
+        right: 2px;
+        border: 2px dashed;
+        border-radius: 6px;
+    }
 `
 
 export default function Lottery () {
-    const [rotate, steRotate] = useState(false)
+    const [rotate, setRotate] = useState(false)
+    const [modal, setModal] = useState(false)
+    const [result, setResult] = useState(-1)
     const [deg, setDeg] = useState(0)
-    const [table, setTable] = useState(true)
+    // const [table, handle] = useTriggerBtn(true)
+    const demo = useRef(7)
     const [areas, setArea] = useState([
         { name: 't1', checked: true, img: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687162882486612.png', target: '', percent: 0.1 },
         { name: 't2', checked: true, img: 'https://empty.t-n.top/pub_lic/2023_05_31/pic1685527384699939.png', target: '', percent: 0.05 },
@@ -131,12 +184,13 @@ export default function Lottery () {
         if(rotate) return;
         setDeg(deg => deg % 360)
         setTimeout(() => {
-            steRotate(true)
+            setRotate(true)
         })
     }
     const stopRotate = () => {
-        steRotate(false)
+        setRotate(false)
         setDeg(deg => deg % 360)
+        setModal(true)
     }
     const handleTable = (ind: number, attr: string, val: string | boolean | number) => {
         const data = JSON.parse(JSON.stringify(areas))
@@ -155,7 +209,7 @@ export default function Lottery () {
         setArea((areas) => {
             const res = JSON.parse(JSON.stringify(areas))
             res.push({
-                name: '',
+                name: `t${demo.current}`,
                 checked: true,
                 img: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687162882486612.png',
                 target: '', 
@@ -163,6 +217,7 @@ export default function Lottery () {
             })
             return res
         })
+        demo.current++
     }
     const delArea = (i: number) => {
         setArea((areas) => {
@@ -181,6 +236,7 @@ export default function Lottery () {
             const ind = belongArea()
             const are = 360 / ares.length
             const swingRate = Math.random() * 0.8 + 0.1
+            setResult(ind)
             setDeg(_ => 1440 + ind * are + Math.floor((swingRate - 0.5) * are))
         }
     }, [rotate, belongArea, areas, empty])
@@ -220,32 +276,40 @@ export default function Lottery () {
             </div>
             <LazyImage className="lottery_bg start_btn" src="https://empty.t-n.top/pub_lic/2023_06_21/pic1687328322726591.webp" onClick={startRotate} />
             <div className="rate_table">
-                <div className="table_wrap" style={{ scale: table ? '1' : '0' }}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>名称</th>
-                                <th>权重</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[...areas, ...empty].map((item, ind, total) => (<tr key={ind}>
-                                <td>{
-                                    'checked' in item && typeof item.checked === "boolean" ? 
-                                    (<input type="checkbox" name="" defaultChecked={item.checked} id="" onChange={(e) => handleTable(ind, 'checked', e.target.checked)} />) : 
-                                    (<SVGIcon type="plus" style={{ fill: '#fff' }} onClick={addArea} />)
-                                }</td>
-                                <td><input type="text" value={item.name} onChange={(e) => handleTable(ind, 'name', e.target.value)} /></td>
-                                <td><input type="text" {...('checked' in item ? {} : {readOnly: true})} value={item.percent} onChange={(e) => handleTable(ind, 'percent', e.target.value)} onBlur={(e) => changePower(e, ind)} /></td>
-                                <td>{'checked' in item && total.length > 2 ? <SVGIcon type="trash" style={{ fill: '#fff' }} width="16" onClick={() => delArea(ind)} /> : ''}</td>
-                            </tr>))}
-                        </tbody>
-                    </table>
-                </div>
-                <SVGIcon className={`table_switch${table? ' light_switch' : ''}`} type="list" width="32" onClick={() => setTable(val => !val)} />
+                <TriggerBtn>
+                    <SVGIcon className="table_switch" type="list" width="32" />
+                    <div className="table_wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>名称</th>
+                                    <th>权重</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[...areas, ...empty].map((item, ind, total) => (<tr key={ind}>
+                                    <td>{
+                                        'checked' in item && typeof item.checked === "boolean" ? 
+                                        (<input type="checkbox" name="" defaultChecked={item.checked} id="" onChange={(e) => handleTable(ind, 'checked', e.target.checked)} />) : 
+                                        (<SVGIcon type="plus" style={{ fill: '#fff' }} onClick={addArea} />)
+                                    }</td>
+                                    <td><input type="text" value={item.name} onChange={(e) => handleTable(ind, 'name', e.target.value)} /></td>
+                                    <td><input type="text" {...('checked' in item ? {} : {readOnly: true})} value={item.percent} onChange={(e) => handleTable(ind, 'percent', e.target.value)} onBlur={(e) => changePower(e, ind)} /></td>
+                                    <td>{'checked' in item && total.length > 2 ? <SVGIcon type="trash" style={{ fill: '#fff' }} width="16" onClick={() => delArea(ind)} /> : ''}</td>
+                                </tr>))}
+                            </tbody>
+                        </table>
+                    </div>
+                </TriggerBtn>
             </div>
+            {result !== -1 && modal && <div className="modal_mask" onClick={() => {setModal(false)}}>
+                <div className="modal_wrap">
+                    <LazyImage className="con_img" src="https://imgs.qiubiaoqing.com/qiubiaoqing/imgs/62b8b586617c4s5j.gif" />
+                    <div className="modal_content">{[...areas.filter(e => e.checked), ...empty][result]?.name}</div>
+                </div>
+            </div>}
         </DIV>
     </>)
 }
