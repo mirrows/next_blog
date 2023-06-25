@@ -7,7 +7,7 @@ type TProps = {
 }
 
 function LazyImage({ src, className, ...props }: TProps) {
-    const loadingGif = useRef(process.env.NEXT_PUBLIC_LOADING_GIF || 'https://raw.githubusercontent.com/huaasto/empty/main/pub_lic/2023_06_09/pic1686281264582557.gif')
+    const loadingGif = useRef(process.env.NEXT_PUBLIC_LOADING_GIF || 'https://empty.t-n.top/pub_lic/2023_06_09/pic1686281264582557.gif')
     const failImg = useRef('https://pic.mksucai.com/00/38/98/82832a25323c0abe.webp')
     const [imgSrc, setSrc] = useState(loadingGif.current)
     const imgRef = useRef<HTMLImageElement | null>(null)
