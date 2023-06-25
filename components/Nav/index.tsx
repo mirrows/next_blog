@@ -4,10 +4,11 @@ import { parseObj2queryStr, parsequeryStr2Obj } from "@/utils/common"
 import { stone } from "@/utils/global"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import styled from "styled-components"
 import SVGIcon from "../SVGIcon"
 import { env } from "process"
+import TriggerBtn from "../TriggerBtn"
 
 
 const Div = styled.div`
@@ -61,7 +62,7 @@ const Div = styled.div`
     .expand_icon{
       display: block;
     }
-    .right_nav_wrap:hover .nav_list{
+    .nav_list.modal-active{
       display: block;
       position: absolute;
       right: 0;
@@ -137,31 +138,32 @@ const NavHeader = () => {
           <SVGIcon type="logo" style={{ height: '10vw', maxHeight: '45px', padding: '5px 20px' }} fill="#000" viewBox="0 0 418.462347 89.379659" />
         </Link>
         <div className="right_nav_wrap">
-          <SVGIcon type="list" className="expand_icon" style={{ width: '32px', padding: '5px 10px' }} />
-          <div className='nav_list'>
-            <Link className="nav_item" href="/" aria-label="link to homepage">
-              <SVGIcon type="home" className="nav_icon" />
-              <span>Home</span>
-            </Link>
-            <Link className="nav_item" href="/demos" aria-label="see more demos">
-              <SVGIcon type="demos" className="nav_icon" />
-              <span>Demos</span>
-            </Link>
-            <Link className="nav_item" href="/about" aria-label="read about me">
-              <SVGIcon type="about_me" className="nav_icon" />
-              <span>About me</span>
-            </Link>
-            {user ? (<a className="nav_item item_right" aria-label="link to github page" href={user.html_url} target="_blank">
-              <span>{user.login}</span>
-              <img src={user.avatar_url} className="nav_icon" alt="" />
-            </a>)
-              : (<div className="nav_item item_right" onClick={login}>
-                <span>Login</span>
-                <SVGIcon type="github" className="nav_icon" viewBox="0 0 16 16" />
-              </div>)}
-          </div>
+          <TriggerBtn>
+            <SVGIcon type="list" className="expand_icon" style={{ width: '32px', padding: '5px 10px' }} />
+            <div className='nav_list'>
+              <Link className="nav_item" href="/" aria-label="link to homepage">
+                <SVGIcon type="home" className="nav_icon" />
+                <span>Home</span>
+              </Link>
+              <Link className="nav_item" href="/demos" aria-label="see more demos">
+                <SVGIcon type="demos" className="nav_icon" />
+                <span>Demos</span>
+              </Link>
+              <Link className="nav_item" href="/about" aria-label="read about me">
+                <SVGIcon type="about_me" className="nav_icon" />
+                <span>About me</span>
+              </Link>
+              {user ? (<a className="nav_item item_right" aria-label="link to github page" href={user.html_url} target="_blank">
+                <span>{user.login}</span>
+                <img src={user.avatar_url} className="nav_icon" alt="" />
+              </a>)
+                : (<div className="nav_item item_right" onClick={login}>
+                  <span>Login</span>
+                  <SVGIcon type="github" className="nav_icon" viewBox="0 0 16 16" />
+                </div>)}
+            </div>
+          </TriggerBtn>
         </div>
-
       </div>
     </Div>
   )
