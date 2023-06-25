@@ -252,7 +252,7 @@ export default function Lottery () {
                         key={ind}
                         className="area_item"
                         src={item.img}
-                        style={{ width: `${30 - total.length*2}vw`, transform: `rotate(${360 / total.length * ind}deg)` }}
+                        style={{ width: `${18 - total.length}vw`, transform: `rotate(${360 / total.length * ind}deg)` }}
                     />
                 ))}
             </div>
