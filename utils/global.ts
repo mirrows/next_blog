@@ -1,5 +1,4 @@
 import { GblData } from "@/types/global";
-import { useRef } from "react";
 import { deepClone } from "./common";
 import { NormalObj } from "@/types/common";
 
@@ -30,6 +29,7 @@ export const stone = {
   },
   set(newData: Partial<typeof gbData>) {
     this.data = { ...this.data, ...newData };
+    localStorage.setItem('tmpData', JSON.stringify(stone.data))
   },
   on(name: string, cb: Function) {
     this.events[`event_${name}`] || (this.events[`event_${name}`] = [])
@@ -52,7 +52,6 @@ if (typeof window !== "undefined") {
 
   window.addEventListener('beforeunload', (e) => {
     localStorage.setItem('tmpData', JSON.stringify(stone.data))
-    console.log(localStorage.tmpData && JSON.parse(localStorage.tmpData))
   })
 }
 
