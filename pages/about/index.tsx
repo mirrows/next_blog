@@ -220,7 +220,7 @@ type Props = {
 export default function About({ artical: atl, comments: cmts }: Props) {
   const pic = useRef<HTMLElement | null>()
   const dom = useRef<any>()
-  const [artical] = useState(atl)
+  const [artical, setArtical] = useState(atl)
   const content = useRef<HTMLDivElement | null>(null)
   const input = useRef<HTMLTextAreaElement | null>(null)
   const [isPreview, setIsPreview] = useState(false)
@@ -244,19 +244,25 @@ export default function About({ artical: atl, comments: cmts }: Props) {
     if (!input.current?.value) return
     addComment(input.current.value).then(res => {
       if (res.code) return
-      listComments()
+      listComments(1)
       input.current && (input.current.value = '')
       content.current && (content.current.innerHTML = '')
       setIsPreview(false)
     })
   }
 
-  const listComments = () => {
-    queryComments(page.current).then(res => {
+  const listComments = (page: number) => {
+    queryComments(page).then(res => {
       total.current = res.total
       setComments(res.data)
     })
   }
+  const queryMe = () => {
+    about().then(res => {
+      setArtical(res.data)
+    })
+  }
+
   useEffect(() => {
     stone.data.emit()
     // md解析的图片会添加懒加载机制，此时必须手动检查一次是否在可视区内
@@ -284,6 +290,8 @@ export default function About({ artical: atl, comments: cmts }: Props) {
       dom.current.uniforms.uNoiseIntensity.value = 0.0001 + Math.random() * 0.001
       dom.current.uniforms.uPointSize.value = 1 + Math.random() * 10
     })
+    queryMe();
+    listComments(page.current);
   }, [])
   return (
     <>
@@ -337,7 +345,7 @@ export default function About({ artical: atl, comments: cmts }: Props) {
     </>
   )
 }
-export const getServerSideProps = async (context: any) => {
+export const getStaticProps = async (context: any) => {
   const props: Partial<Props> = {}
   const reqs = [about(), queryComments(1)]
   const [artical, comments] = await Promise.allSettled(reqs);

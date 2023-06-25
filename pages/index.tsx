@@ -266,10 +266,11 @@ const Div = styled.div`
 `
 
 export default function Home({ bing, artical }: Props) {
-  const [pics] = useState<BingPic[]>(bing || []);
+  const [pics, setPics] = useState<BingPic[]>(bing || []);
   const [ind, setInd] = useState(0);
+  const [total, setTotal] = useState(0);
   const swiperRef = useRef<Swiper | null>(null);
-  const [articals] = useState<Artical[]>(artical || []);
+  const [articals, setArtical] = useState<Artical[]>(artical || []);
   const { emit } = useLazyImgs('.imgs_wrap .lazy');
   const [isOwner, setOwner] = useState(false)
   const slideChange = ({realIndex}: {realIndex: number}) => {
@@ -277,6 +278,34 @@ export default function Home({ bing, artical }: Props) {
     emit()
   }
   const router = useRouter();
+  const queryBing = () => {
+    bingQuery().then(({data}) => {
+      const pics = data.map((pic: BingPic) => {
+        const { url, title, copyright, copyrightlink, enddate } = pic;
+        let [content, cpright] = ['', '']
+        copyright.replace(/^(.+)\((.+)\)$/, (oldval, a, b)=>{
+          content = a.trim();
+          cpright = b.trim();
+          return oldval;
+        })
+        return {
+          url,
+          title,
+          content,
+          copyright: cpright,
+          copyrightlink,
+          date: `${enddate.slice(0, 4)}/${enddate.slice(4, 6)}/${enddate.slice(6, 8)}`,
+        }
+      })
+      setPics(pics);
+    })
+  }
+  const queryArticalList = () => {
+    listArtical().then(({data, total}) => {
+      setArtical(data);
+      setTotal(total)
+    })
+  }
   useEffect(() => {
     if (stone.data.userInfo?.login) {
       setOwner(stone.data.userInfo.login === env.user)
@@ -285,6 +314,8 @@ export default function Home({ bing, artical }: Props) {
         setOwner(data.login === env.user)
       })
     }
+    queryBing();
+    queryArticalList();
   }, [])
   return (
     <>
@@ -380,7 +411,7 @@ type Props = {
   total?: number
 }
 
-export const getServerSideProps = async (context: any) => {
+export const getStaticProps = async (context: any) => {
   const props: Props = {}
   const reqs = [bingQuery(), listArtical()];
   const [bings, articals] = await Promise.allSettled(reqs);

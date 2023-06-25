@@ -5,7 +5,7 @@ import { NormalObj } from "@/types/common";
 
 const gbData: GblData = {
   number: 0,
-  str: '666',
+  str: '',
   token: '',
   userInfo: {},
   preview: {},
@@ -47,10 +47,10 @@ export const stone = {
 if (typeof window !== "undefined") {
   if (localStorage.tmpData) {
     stone.set(JSON.parse(localStorage.tmpData))
-    localStorage.removeItem('tmpData')
+    // localStorage.removeItem('tmpData')
   }
 
-  window.addEventListener('beforeunload', () => {
+  window.addEventListener('beforeunload', (e) => {
     localStorage.setItem('tmpData', JSON.stringify(stone.data))
     console.log(localStorage.tmpData && JSON.parse(localStorage.tmpData))
   })
