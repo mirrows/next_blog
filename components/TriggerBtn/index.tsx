@@ -4,10 +4,10 @@ import { cloneElement, useEffect, useState } from "react"
 type Props = {
     initialShow?: boolean,
     children?: JSX.Element | JSX.Element[]
-    type?: 'scale',
+    type?: 'modal' | 'select'
 }
 
-export default function TriggerBtn ({ children, initialShow = false, type = 'scale' }: Props) {
+export default function TriggerBtn ({ children, initialShow = false, type ='modal' }: Props) {
     const [ show, isShow ] = useState(initialShow)
     const handleClick = (e: any) => {
         e.stopPropagation()
@@ -26,7 +26,7 @@ export default function TriggerBtn ({ children, initialShow = false, type = 'sca
         {Array.isArray(children)? cloneElement(children[1], {
             ...children[1].props,
             className: `${children[1].props.className} modal-${show ? 'active' : 'hide'}`,
-            onClick: (e: any) => e.stopPropagation()
+            onClick: (e: any) => type === 'modal' && e.stopPropagation()
         }) : ''}
     </>)
 }

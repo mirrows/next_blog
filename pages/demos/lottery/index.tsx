@@ -13,7 +13,6 @@ const DIV = styled.div`
         left: 0;
         right: 0;
         max-width: 80%;
-        width: unset;
         height: unset;
         max-height: 80%;
         margin: auto;
@@ -77,6 +76,9 @@ const DIV = styled.div`
         overflow: hidden;
         transform-origin: 50% min(32vw, 190px);
         cursor: pointer;
+        &:hover{
+            background-image: linear-gradient(45deg, black, transparent);
+        }
     }
     .rate_table{
         position: fixed;
@@ -91,6 +93,7 @@ const DIV = styled.div`
         max-width: 100vw;
         padding: 10px 5px 32px;
         background-color: rgba(0,0,0,.5);
+        border-radius: 4px; 
         color: #fff;
         transform-origin: 100% 100%;
         transition: .3s;
@@ -100,9 +103,9 @@ const DIV = styled.div`
         &.modal-hide{
             transform: scale(0);
         }
-        input[type="text"]{
+        .n_input{
             width: 100px;
-            padding: 5px;
+            padding: 2px 5px;
             border-radius: 4px;
             border: none;
             outline: none;
@@ -193,6 +196,34 @@ const DIV = styled.div`
             box-shadow: 0 0 20px #cccccc;
         }
     }
+    .item_wrap{
+        display: flex;
+        margin: 5px;
+        .input_wrap{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            margin-left: 8px;
+            .item_checked{
+                width: 20px;
+                height: 20px;
+                .checked_btn{
+                    width: 100%;
+                    height: 100%;
+                    margin: 0;
+                }
+            }
+            .item_del{}
+        }
+        .item_opera{
+            position: relative;
+        }
+    }
+    .scroll_wrap{
+        max-height: 60vh;
+        overflow-y: auto;
+    }
 `
 
 export default function Lottery () {
@@ -212,7 +243,7 @@ export default function Lottery () {
     ])
     const [emptyName, setEmptyName] = useState('empty')
     const empty = useMemo(() => {
-        const percent = areas.filter(e => e.checked).map(e => e.percent).reduce((pre, cur) => +(pre - cur).toFixed(4), 1)
+        const percent = areas.filter(e => e.checked && e.percent > 0).map(e => e.percent).reduce((pre, cur) => +(pre - cur).toFixed(4), 1)
         return percent > 0 ? [{
             name: emptyName,
             img: 'https://empty.t-n.top/pub_lic/2023_06_21/pic1687315603128458.png',
@@ -238,12 +269,22 @@ export default function Lottery () {
             setEmptyName(val as string)
         } else {
             data[ind][attr] = val
+            const percents = data.filter((e: typeof areas[number]) => e.checked).reduce((pre: number, cur: typeof areas[number]) => pre + +cur.percent, 0)
+            console.log(data[ind].percent, percents, attr)
+            if(data[ind].checked && percents > 1 && attr !== 'percent') {
+                const rest = data[ind].percent - (percents - 1)
+                console.log(rest)
+                data[ind].percent = +(rest > 0 ? rest : 0).toFixed(4)
+            }
             setArea(data);
         }
     }
+    const handleCheck = (ind: number, attr: string, val: boolean) => {
+        handleTable(ind, attr, val)
+    }
     const belongArea = useCallback(() => {
         let belong = Math.random();
-        const result = [...areas.filter(e => e.checked), ...empty].findIndex(area => {
+        const result = [...areas.filter(e => e.checked && e.percent > 0), ...empty].findIndex(area => {
             belong = belong - area.percent
             return belong <= 0
         })
@@ -272,12 +313,12 @@ export default function Lottery () {
         })
     }
     const changePower = (e: FocusEvent<HTMLInputElement, Element>, ind: number) => {
-        const percent = areas.filter(e => e.checked).map(e => e.percent).reduce((pre, cur, i) => +(pre + (i === ind ? +e.target.value : cur)).toFixed(4), 0)
-        handleTable(ind, 'percent', percent > 1 ? +(+e.target.value - percent + 1).toFixed(4) : +(+e.target.value).toFixed(4))
+        const percent = areas.filter(e => e.checked && e.percent > 0).map(e => e.percent).reduce((pre, cur, i) => +(pre + (i === ind ? +e.target.value : cur)).toFixed(4), 0)
+        handleTable(ind, 'percent', percent > 1 && areas[ind].checked ? +(+e.target.value - percent + 1).toFixed(4) : +(+e.target.value).toFixed(4))
     }
     useEffect(() => {
         if(rotate) {
-            const ares = [...areas.filter(e => e.checked), ...empty]
+            const ares = [...areas.filter(e => e.checked && e.percent > 0), ...empty]
             const ind = belongArea()
             const are = 360 / ares.length
             const swingRate = Math.random() * 0.8 + 0.1
@@ -292,12 +333,12 @@ export default function Lottery () {
         <DIV>
             <LazyImage className="lottery_bg" width="460" height="460" src="https://empty.t-n.top/pub_lic/2023_06_19/pic1687141057059729.png" />
             <div className="line_wrap lottery_bg sector_wrap">
-                {[...areas.filter(e => e.checked), ...empty].map((_, ind, total) => (
-                    total.length > 1 && <div key={ind} className="sector_item" style={{transform: `scale(0.8) rotate(${360 / total.length * (ind - 0.5) + 90}deg) skew(${90 - 360 / total.length}deg)`}}></div>
+                {[...areas.filter(e => e.checked && e.percent > 0), ...empty].map((_, ind, total) => (
+                    total.length > 1 && <div key={ind} className="sector_item" style={{transform: `scale(1.5) rotate(${total.length > 2 ? 360 / total.length * (ind - 0.5) + 90 : 180 * ind}deg)${total.length > 2 ? ` skew(${90 - 360 / total.length}deg)`: 'translateX(50%)'}`}}></div>
                 ))}
             </div>
             <div className="line_wrap lottery_bg no-pointer">
-                {[...areas.filter(e => e.checked), ...empty].map((item, ind, total) => (
+                {[...areas.filter(e => e.checked && e.percent > 0), ...empty].map((item, ind, total) => (
                     <LazyImage
                         key={ind}
                         className="area_item"
@@ -309,7 +350,7 @@ export default function Lottery () {
                 ))}
             </div>
             <div className="line_wrap lottery_bg no-pointer">
-                {[...areas.filter(e => e.checked), ...empty].map((_, ind, total) => (
+                {[...areas.filter(e => e.checked && e.percent > 0), ...empty].map((_, ind, total) => (
                     total.length > 1 && <div key={ind} className="line" style={{ transform: `translateY(-50%) rotate(${360 / total.length * (ind + 0.5)}deg)` }}></div>
                 ))}
             </div>
@@ -333,35 +374,40 @@ export default function Lottery () {
                 <TriggerBtn>
                     <SVGIcon className="table_switch" type="list" width="32" />
                     <div className="table_wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>名称</th>
-                                    <th>权重</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[...areas, ...empty].map((item, ind, total) => (<tr key={ind}>
-                                    <td>{
-                                        'checked' in item && typeof item.checked === "boolean" ? 
-                                        (<input type="checkbox" name="" defaultChecked={item.checked} id="" onChange={(e) => handleTable(ind, 'checked', e.target.checked)} />) : 
-                                        ( total.length < 10 ? <SVGIcon type="plus" style={{ fill: '#fff' }} onClick={addArea} /> : '')
-                                    }</td>
-                                    <td><input type="text" value={item.name} onChange={(e) => handleTable(ind, 'name', e.target.value)} /></td>
-                                    <td><input type="text" {...('checked' in item ? {} : {readOnly: true, disabled: true})} value={item.percent} onChange={(e) => handleTable(ind, 'percent', e.target.value)} onBlur={(e) => changePower(e, ind)} /></td>
-                                    <td>{'checked' in item && total.length > 2 ? <SVGIcon type="trash" style={{ fill: '#fff' }} width="16" onClick={() => delArea(ind)} /> : ''}</td>
-                                </tr>))}
-                            </tbody>
-                        </table>
+                            <ul className="scroll_wrap no_scroll_bar">
+                                {[...areas, ...empty].map((item, ind, total) => (<li className="item_wrap" key={ind}>
+                                    <div className="input_wrap">
+                                        <div className="item_checked">{
+                                            'checked' in item && typeof item.checked === "boolean" ? 
+                                            (<input className="checked_btn" type="checkbox" name="" defaultChecked={item.checked} id="" onChange={(e) => handleCheck(ind, 'checked', e.target.checked)} />) : 
+                                            ( total.length < 10 ? <SVGIcon type="plus" style={{ fill: '#fff' }} onClick={addArea} /> : '')
+                                        }</div>
+                                        <div className="item_del">{'checked' in item && total.length > 2 ? <SVGIcon type="trash" style={{ fill: '#fff' }} width="16" onClick={() => delArea(ind)} /> : ''}</div>
+                                    </div>
+                                    <div className="input_wrap">
+                                        <input className="n_input" type="text" placeholder="名称" value={item.name} onChange={(e) => handleTable(ind, 'name', e.target.value)} />
+                                        <input
+                                            className="n_input"
+                                            type="number"
+                                            placeholder="权重"
+                                            {...('checked' in item ? {} : {readOnly: true, disabled: true})}
+                                            value={String(item.percent)}
+                                            onChange={(e) => handleTable(ind, 'percent', e.target.value)}
+                                            onBlur={(e) => changePower(e, ind)}
+                                        />
+                                    </div>
+                                    <div className="item_opera">
+                                        <LazyImage src={item.img} width="50" height="50" />
+                                    </div>
+                                </li>))}
+                            </ul>
                     </div>
                 </TriggerBtn>
             </div>
             {result !== -1 && modal && <div className="modal_mask" onClick={() => {setModal(false)}}>
                 <div className="modal_wrap">
                     <LazyImage className="con_img" width="342" height="286" src="https://empty.t-n.top/pub_lic/2023_06_26/pic1687747158480258.gif" />
-                    <div className="modal_content">{[...areas.filter(e => e.checked), ...empty][result]?.name}</div>
+                    <div className="modal_content">{[...areas.filter(e => e.checked && e.percent > 0), ...empty][result]?.name}</div>
                 </div>
             </div>}
         </DIV>

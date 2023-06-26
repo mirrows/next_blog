@@ -57,6 +57,10 @@ table{
   background: #a5a5a5;
 }
 
+.no_scroll_bar::-webkit-scrollbar{
+  display: none;
+}
+
 .ps_mask{
   position: fixed;
   top: 0;
@@ -72,6 +76,11 @@ table{
   width: 120px;
   margin: 20% auto 0;
   /* background-color: #000; */
+}
+
+ul{
+  padding-left: 0;
+  list-style-type: none;
 }
 
 img, svg{
