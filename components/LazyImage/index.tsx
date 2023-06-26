@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
 type TProps = {
@@ -30,7 +31,7 @@ function LazyImage({ src, className, ...props }: TProps) {
         }
     }, [src])
     return(
-        <img
+        <Image
             className={className ? `lazy ${className}` : 'lazy'}
             ref={imgRef}
             src={imgSrc}
