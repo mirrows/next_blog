@@ -30,11 +30,12 @@ const DIV = styled.div`
   }
   .item_wrap{
     position: relative;
-    padding: 10px;
+    padding: 0.6rem;
     pointer-events: all;
   }
   .item{
     width: 100%;
+    height: unset;
     padding: 10px;
     border: 3px dashed #f5f5f5;
     border-radius: 12px;

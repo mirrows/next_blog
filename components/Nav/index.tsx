@@ -138,7 +138,7 @@ const NavHeader = () => {
           <SVGIcon type="logo" style={{ height: '10vw', maxHeight: '45px', padding: '5px 20px' }} fill="#000" viewBox="0 0 418.462347 89.379659" />
         </Link>
         <div className="right_nav_wrap">
-          <TriggerBtn>
+          <TriggerBtn type="select">
             <SVGIcon type="list" className="expand_icon" style={{ width: '32px', padding: '5px 10px' }} />
             <div className='nav_list'>
               <Link className="nav_item" href="/" aria-label="link to homepage">

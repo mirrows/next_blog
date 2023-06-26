@@ -395,16 +395,17 @@ export default function Lottery () {
                                 <div className="input_wrap">
                                     <div className="item_checked">{
                                         'checked' in item && typeof item.checked === "boolean" ? 
-                                        (<input className="checked_btn" type="checkbox" name="" checked={item.checked} id="" onChange={(e) => handleCheck(ind, 'checked', e.target.checked)} />) : 
+                                        (<input className="checked_btn" aria-label="if it can be used in the following lottery" type="checkbox" name="" checked={item.checked} id="" onChange={(e) => handleCheck(ind, 'checked', e.target.checked)} />) : 
                                         ( total.length < 10 ? <SVGIcon type="plus" style={{ fill: '#fff' }} onClick={addArea} /> : '')
                                     }</div>
                                     <div className="item_del">{'checked' in item && total.length > 2 ? <SVGIcon type="trash" style={{ fill: '#fff' }} width="16" onClick={() => delArea(ind)} /> : ''}</div>
                                 </div>
                                 <div className="input_wrap">
-                                    <input className="n_input" type="text" placeholder="名称" value={item.name} onChange={(e) => handleTable(ind, 'name', e.target.value)} />
+                                    <input className="n_input" type="text" aria-label="lottery item name" placeholder="名称" value={item.name} onChange={(e) => handleTable(ind, 'name', e.target.value)} />
                                     <input
                                         className="n_input"
                                         type="number"
+                                        aria-label="the posibility it win"
                                         placeholder="权重"
                                         {...('checked' in item ? {disabled: !power} : {readOnly: true, disabled: true})}
                                         value={String(power ? item.percent : +(1 / areas.filter(e => e.checked).length).toFixed(4))}
@@ -418,7 +419,7 @@ export default function Lottery () {
                             </li>))}
                         </ul>
                         <div className="power_wrap">
-                            <label><input className="checked_btn" type="checkbox" checked={power} onChange={(e) => isUsePower(e.target.checked)} />权重</label>
+                            <label><input className="checked_btn" type="checkbox" aria-label="if show each item the same Weights" checked={power} onChange={(e) => isUsePower(e.target.checked)} />权重</label>
                             { !power && [...areas, ...empty].length < 10 ? <SVGIcon type="plus" width="20" style={{ fill: '#fff', marginLeft: '5px' }} onClick={addArea} /> : ''}
                         </div>
                     </div>
