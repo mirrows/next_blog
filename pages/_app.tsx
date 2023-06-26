@@ -2,7 +2,7 @@ import NavHeader from '@/components/Nav'
 import { ipQuery, statisticVisitor, visitorsData } from '@/req/main'
 import { stone } from '@/utils/global'
 import type { AppProps } from 'next/app'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import '../public/common.css';
 import { marked } from 'marked'

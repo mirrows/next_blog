@@ -35,6 +35,7 @@ const DIV = styled.div`
   }
   .item{
     width: 100%;
+    padding: 10px;
     border: 3px dashed #f5f5f5;
     border-radius: 12px;
     box-sizing: border-box;
@@ -42,7 +43,7 @@ const DIV = styled.div`
     cursor: pointer;
   }
   .demo_name{
-    margin: 10px;
+    margin: 10px 0;
     text-align: center;
     word-break: break-all;
     font-size: 14px;
@@ -63,6 +64,11 @@ export default function Demos() {
       name: '抽奖模型',
       icon: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687153304035427.png',
       link: '/demos/lottery',
+    },
+    {
+      name: '2048',
+      icon: 'https://empty.t-n.top/pub_lic/2023_06_26/pic1687749579236835.png',
+      link: '/demos/2048',
     }
   ])
   useEffect(() => {

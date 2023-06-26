@@ -38,7 +38,7 @@ export const base64ToWebp = (base64: string, name: string, type = 'base64') => {
 
 }
 
-export const useLazyImgs = (path?: string) => {
+export const useLazyImgs = (path?: string, cd?: Function) => {
   const domsRef = useRef<NodeListOf<any>>()
   const imgListener = useCallback((path = 'lazy') => {
     let realPath = 'lazy';
@@ -59,9 +59,14 @@ export const useLazyImgs = (path?: string) => {
         && !(img.getBoundingClientRect().left < -clientWidth
         || img.getBoundingClientRect().left > 1.5 * clientWidth)
       ) {
-        img.dataset.src && img.setAttribute('src', img.dataset.src)
-        img.classList.remove('lazy')
-        arr.push(i)
+        setTimeout(() => {
+          if (img.dataset.src) {
+            img.setAttribute('src', img.dataset.src)
+            img.setAttribute('srcset', img.dataset.src)
+          }
+          img.classList.remove('lazy')
+          arr.push(i)
+        })
       }
     })
   }, [])
@@ -75,7 +80,6 @@ export const useLazyImgs = (path?: string) => {
   }
 
   useEffect(() => {
-    
     path && (domsRef.current = document.querySelectorAll(path))
     imgListener();
     const scroller = debounce(imgListener)
