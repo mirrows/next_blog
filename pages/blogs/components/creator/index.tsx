@@ -210,7 +210,7 @@ export default function BlogCreator({ artical, onSubmit: fn }: Props) {
             value={artical?.created_at}
           />
         </div>
-        <LazyImage className='atl_bg' src={img} alt={title} />
+        <LazyImage className='atl_bg' width="700" height="200" src={img} alt={title} />
         <div className="blog_content" dangerouslySetInnerHTML={{ __html: parseBody(xss(marked.parse(content || '')), ['lazyImg']) }}></div>
       </div>
       <div className='input_area'>

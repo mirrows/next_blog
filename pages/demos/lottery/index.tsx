@@ -13,6 +13,8 @@ const DIV = styled.div`
         left: 0;
         right: 0;
         max-width: 80%;
+        width: unset;
+        height: unset;
         max-height: 80%;
         margin: auto;
         text-align: center;
@@ -69,6 +71,7 @@ const DIV = styled.div`
         left: 0;
         right: 0;
         max-width: 100px;
+        height: unset;
         margin: auto;
         border-radius: 30%;
         overflow: hidden;
@@ -132,6 +135,7 @@ const DIV = styled.div`
         position: relative;
         bottom: -16px;
         width: 160px;
+        height: unset;
         z-index: 1;
     }
     .modal_content{
@@ -286,7 +290,7 @@ export default function Lottery () {
             <title>抽奖</title>
         </Head>
         <DIV>
-            <LazyImage className="lottery_bg" src="https://empty.t-n.top/pub_lic/2023_06_19/pic1687141057059729.png" />
+            <LazyImage className="lottery_bg" width="460" height="460" src="https://empty.t-n.top/pub_lic/2023_06_19/pic1687141057059729.png" />
             <div className="line_wrap lottery_bg sector_wrap">
                 {[...areas.filter(e => e.checked), ...empty].map((_, ind, total) => (
                     total.length > 1 && <div key={ind} className="sector_item" style={{transform: `scale(0.8) rotate(${360 / total.length * (ind - 0.5) + 90}deg) skew(${90 - 360 / total.length}deg)`}}></div>
@@ -297,6 +301,8 @@ export default function Lottery () {
                     <LazyImage
                         key={ind}
                         className="area_item"
+                        width="100"
+                        height="100"
                         src={item.img}
                         style={{ width: `${18 - total.length}vw`, transform: `rotate(${360 / total.length * ind}deg)` }}
                     />
@@ -317,10 +323,12 @@ export default function Lottery () {
             >
                 <LazyImage
                     className="pointer"
+                    width="96"
+                    height="144"
                     src="https://empty.t-n.top/pub_lic/2023_06_21/pic1687328567823851.png"
                 />
             </div>
-            <LazyImage className="lottery_bg start_btn" src="https://empty.t-n.top/pub_lic/2023_06_21/pic1687328322726591.webp" onClick={startRotate} />
+            <LazyImage className="lottery_bg start_btn" width="80" height="80" src="https://empty.t-n.top/pub_lic/2023_06_21/pic1687328322726591.webp" onClick={startRotate} />
             <div className="rate_table">
                 <TriggerBtn>
                     <SVGIcon className="table_switch" type="list" width="32" />
@@ -352,7 +360,7 @@ export default function Lottery () {
             </div>
             {result !== -1 && modal && <div className="modal_mask" onClick={() => {setModal(false)}}>
                 <div className="modal_wrap">
-                    <LazyImage className="con_img" src="https://imgs.qiubiaoqing.com/qiubiaoqing/imgs/62b8b586617c4s5j.gif" />
+                    <LazyImage className="con_img" width="342" height="286" src="https://empty.t-n.top/pub_lic/2023_06_26/pic1687747158480258.gif" />
                     <div className="modal_content">{[...areas.filter(e => e.checked), ...empty][result]?.name}</div>
                 </div>
             </div>}

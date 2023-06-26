@@ -81,7 +81,7 @@ export default function Demos() {
           {show && <iframe className='fire_wrap' src="https://empty.t-n.top/html/WebGL%20Fluid%20Simulation.html"></iframe>}
           <div className="items_wrap">
             {list.map((item, i) => (<Link key={i} className='item_wrap' aria-label={item.name} href={item.link}>
-              <LazyImage className='item' src={item.icon} />
+              <LazyImage className='item' width="100" height="100" src={item.icon} />
               <div className='demo_name two_line'>{item.name}</div>
             </Link>))}
           </div>

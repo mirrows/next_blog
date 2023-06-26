@@ -331,7 +331,7 @@ export default function Blog({ artical: atl, comments: cmts }: Props) {
                 </span>
                 <span className='atl_base_msg'>评论数：{artical.comments}</span>
               </div>
-              <LazyImage className='atl_bg' src={artical.img} alt={artical.title} />
+              <LazyImage className='atl_bg' width="700" height="200" src={artical.img} alt={artical.title} />
               <div className="blog_content" dangerouslySetInnerHTML={{ __html: parseBody(xss(marked.parse(artical?.body || '')))}}></div>
             </div>
             <div className='blog_wrap add_comment'>
@@ -352,7 +352,7 @@ export default function Blog({ artical: atl, comments: cmts }: Props) {
               comments.length ? comments.map(comment => (
                 <div key={comment.id} className='comment_content_wrap'>
                   <div className='author_msg'>
-                    <LazyImage className='avator' src={comment.author.avatarUrl} alt="" />
+                    <LazyImage className='avator' width="36" height="36" src={comment.author.avatarUrl} alt="" />
                     <div>
                       <div>{comment.author.login}</div>
                       <DateText
