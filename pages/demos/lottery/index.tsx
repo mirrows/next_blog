@@ -2,7 +2,7 @@ import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
 import TriggerBtn from "@/components/TriggerBtn"
 import Head from "next/head"
-import { FocusEvent, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { ChangeEvent, FocusEvent, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import styled from "styled-components"
 
 const DIV = styled.div`
@@ -204,25 +204,32 @@ const DIV = styled.div`
             flex-direction: column;
             justify-content: space-evenly;
             align-items: center;
-            margin-left: 8px;
+            margin-right: 8px;
             .item_checked{
                 width: 20px;
                 height: 20px;
-                .checked_btn{
-                    width: 100%;
-                    height: 100%;
-                    margin: 0;
-                }
             }
-            .item_del{}
         }
         .item_opera{
             position: relative;
         }
     }
+    
+    .checked_btn{
+        width: 20px;
+        height: 20px;
+        margin: 0;
+    }
     .scroll_wrap{
         max-height: 60vh;
         overflow-y: auto;
+    }
+    .power_wrap{
+        position: absolute;
+        margin: 5px;
+        .checked_btn{
+            margin-right: 4px;
+        }
     }
 `
 
@@ -231,6 +238,7 @@ export default function Lottery () {
     const [modal, setModal] = useState(false)
     const [result, setResult] = useState(-1)
     const [deg, setDeg] = useState(0)
+    const [power, setPower] = useState(true)
     // const [table, handle] = useTriggerBtn(true)
     const demo = useRef(7)
     const [areas, setArea] = useState([
@@ -251,6 +259,9 @@ export default function Lottery () {
             percent,
         }] : []
     }, [areas, emptyName])
+    const viewTotal = useMemo(() => {
+        return power ? [...areas.filter(e => e.checked && e.percent > 0), ...empty] : areas.filter(e => e.checked)
+    }, [empty, areas, power])
     const startRotate = () => {
         if(rotate) return;
         setDeg(deg => deg % 360)
@@ -284,12 +295,14 @@ export default function Lottery () {
     }
     const belongArea = useCallback(() => {
         let belong = Math.random();
-        const result = [...areas.filter(e => e.checked && e.percent > 0), ...empty].findIndex(area => {
-            belong = belong - area.percent
+        const are = [...areas.filter(e => e.checked && (!power || e.percent > 0)), ...(power ? empty : [])]
+        const percent = +(1 / areas.filter(e => e.checked).length).toFixed(4)
+        const result = are.findIndex(area => {
+            belong = belong - (power ? area.percent : percent)
             return belong <= 0
         })
         return result
-    }, [areas, empty])
+    }, [areas, empty, power])
     const addArea = () => {
         setArea((areas) => {
             const res = JSON.parse(JSON.stringify(areas))
@@ -298,7 +311,7 @@ export default function Lottery () {
                 checked: true,
                 img: 'https://empty.t-n.top/pub_lic/2023_06_19/pic1687162882486612.png',
                 target: '', 
-                percent: empty[0].percent
+                percent: empty[0]?.percent || 0
             })
             return res
         })
@@ -316,16 +329,19 @@ export default function Lottery () {
         const percent = areas.filter(e => e.checked && e.percent > 0).map(e => e.percent).reduce((pre, cur, i) => +(pre + (i === ind ? +e.target.value : cur)).toFixed(4), 0)
         handleTable(ind, 'percent', percent > 1 && areas[ind].checked ? +(+e.target.value - percent + 1).toFixed(4) : +(+e.target.value).toFixed(4))
     }
+    const isUsePower = (val: boolean) => {
+        setPower(val)
+    }
     useEffect(() => {
         if(rotate) {
-            const ares = [...areas.filter(e => e.checked && e.percent > 0), ...empty]
+            const ares = power ? [...areas.filter(e => e.checked && e.percent > 0), ...empty] : areas.filter(e => e.checked)
             const ind = belongArea()
             const are = 360 / ares.length
             const swingRate = Math.random() * 0.8 + 0.1
             setResult(ind)
             setDeg(_ => 1440 + ind * are + Math.floor((swingRate - 0.5) * are))
         }
-    }, [rotate, belongArea, areas, empty])
+    }, [rotate, belongArea, areas, empty, power])
     return(<>
         <Head>
             <title>抽奖</title>
@@ -333,12 +349,12 @@ export default function Lottery () {
         <DIV>
             <LazyImage className="lottery_bg" width="460" height="460" src="https://empty.t-n.top/pub_lic/2023_06_19/pic1687141057059729.png" />
             <div className="line_wrap lottery_bg sector_wrap">
-                {[...areas.filter(e => e.checked && e.percent > 0), ...empty].map((_, ind, total) => (
+                {viewTotal.map((_, ind, total) => (
                     total.length > 1 && <div key={ind} className="sector_item" style={{transform: `scale(1.5) rotate(${total.length > 2 ? 360 / total.length * (ind - 0.5) + 90 : 180 * ind}deg)${total.length > 2 ? ` skew(${90 - 360 / total.length}deg)`: 'translateX(50%)'}`}}></div>
                 ))}
             </div>
             <div className="line_wrap lottery_bg no-pointer">
-                {[...areas.filter(e => e.checked && e.percent > 0), ...empty].map((item, ind, total) => (
+                {viewTotal.map((item, ind, total) => (
                     <LazyImage
                         key={ind}
                         className="area_item"
@@ -350,7 +366,7 @@ export default function Lottery () {
                 ))}
             </div>
             <div className="line_wrap lottery_bg no-pointer">
-                {[...areas.filter(e => e.checked && e.percent > 0), ...empty].map((_, ind, total) => (
+                {viewTotal.map((_, ind, total) => (
                     total.length > 1 && <div key={ind} className="line" style={{ transform: `translateY(-50%) rotate(${360 / total.length * (ind + 0.5)}deg)` }}></div>
                 ))}
             </div>
@@ -374,40 +390,44 @@ export default function Lottery () {
                 <TriggerBtn>
                     <SVGIcon className="table_switch" type="list" width="32" />
                     <div className="table_wrap">
-                            <ul className="scroll_wrap no_scroll_bar">
-                                {[...areas, ...empty].map((item, ind, total) => (<li className="item_wrap" key={ind}>
-                                    <div className="input_wrap">
-                                        <div className="item_checked">{
-                                            'checked' in item && typeof item.checked === "boolean" ? 
-                                            (<input className="checked_btn" type="checkbox" name="" defaultChecked={item.checked} id="" onChange={(e) => handleCheck(ind, 'checked', e.target.checked)} />) : 
-                                            ( total.length < 10 ? <SVGIcon type="plus" style={{ fill: '#fff' }} onClick={addArea} /> : '')
-                                        }</div>
-                                        <div className="item_del">{'checked' in item && total.length > 2 ? <SVGIcon type="trash" style={{ fill: '#fff' }} width="16" onClick={() => delArea(ind)} /> : ''}</div>
-                                    </div>
-                                    <div className="input_wrap">
-                                        <input className="n_input" type="text" placeholder="名称" value={item.name} onChange={(e) => handleTable(ind, 'name', e.target.value)} />
-                                        <input
-                                            className="n_input"
-                                            type="number"
-                                            placeholder="权重"
-                                            {...('checked' in item ? {} : {readOnly: true, disabled: true})}
-                                            value={String(item.percent)}
-                                            onChange={(e) => handleTable(ind, 'percent', e.target.value)}
-                                            onBlur={(e) => changePower(e, ind)}
-                                        />
-                                    </div>
-                                    <div className="item_opera">
-                                        <LazyImage src={item.img} width="50" height="50" />
-                                    </div>
-                                </li>))}
-                            </ul>
+                        <ul className="scroll_wrap no_scroll_bar">
+                            {[...areas, ...(power ? empty : [])].map((item, ind, total) => (<li className="item_wrap" key={ind}>
+                                <div className="input_wrap">
+                                    <div className="item_checked">{
+                                        'checked' in item && typeof item.checked === "boolean" ? 
+                                        (<input className="checked_btn" type="checkbox" name="" checked={item.checked} id="" onChange={(e) => handleCheck(ind, 'checked', e.target.checked)} />) : 
+                                        ( total.length < 10 ? <SVGIcon type="plus" style={{ fill: '#fff' }} onClick={addArea} /> : '')
+                                    }</div>
+                                    <div className="item_del">{'checked' in item && total.length > 2 ? <SVGIcon type="trash" style={{ fill: '#fff' }} width="16" onClick={() => delArea(ind)} /> : ''}</div>
+                                </div>
+                                <div className="input_wrap">
+                                    <input className="n_input" type="text" placeholder="名称" value={item.name} onChange={(e) => handleTable(ind, 'name', e.target.value)} />
+                                    <input
+                                        className="n_input"
+                                        type="number"
+                                        placeholder="权重"
+                                        {...('checked' in item ? {disabled: !power} : {readOnly: true, disabled: true})}
+                                        value={String(power ? item.percent : +(1 / areas.filter(e => e.checked).length).toFixed(4))}
+                                        onChange={(e) => handleTable(ind, 'percent', e.target.value)}
+                                        onBlur={(e) => changePower(e, ind)}
+                                    />
+                                </div>
+                                <div className="item_opera">
+                                    <LazyImage src={item.img} width="50" height="50" />
+                                </div>
+                            </li>))}
+                        </ul>
+                        <div className="power_wrap">
+                            <label><input className="checked_btn" type="checkbox" checked={power} onChange={(e) => isUsePower(e.target.checked)} />权重</label>
+                            { !power && [...areas, ...empty].length < 10 ? <SVGIcon type="plus" width="20" style={{ fill: '#fff', marginLeft: '5px' }} onClick={addArea} /> : ''}
+                        </div>
                     </div>
                 </TriggerBtn>
             </div>
             {result !== -1 && modal && <div className="modal_mask" onClick={() => {setModal(false)}}>
                 <div className="modal_wrap">
                     <LazyImage className="con_img" width="342" height="286" src="https://empty.t-n.top/pub_lic/2023_06_26/pic1687747158480258.gif" />
-                    <div className="modal_content">{[...areas.filter(e => e.checked && e.percent > 0), ...empty][result]?.name}</div>
+                    <div className="modal_content">{viewTotal[result]?.name}</div>
                 </div>
             </div>}
         </DIV>
