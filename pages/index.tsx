@@ -171,6 +171,9 @@ const Div = styled.div`
     color: #fff;
     pointer-events: all;
   }
+  .artical_wrap:last-child{
+    margin-bottom: 0;
+  }
   .artical_img{
     min-width: 200px;
     width: 40%;

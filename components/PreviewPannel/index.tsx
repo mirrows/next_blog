@@ -15,7 +15,7 @@ type Time = {
 
 const DIV = styled.div`
   position: relative;
-  margin: 0 auto;
+  margin: 10px auto;
   padding: 10px 0;
   z-index: 26;
   text-align:center;
