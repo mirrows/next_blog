@@ -98,7 +98,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Div>
         <div className={`ps_mask${loading ? '' : ' disappear'}`}>
           <div className="loading_wrap">
-            <LazyImage src="/loading.gif" alt="loading img" />
+            <LazyImage width="120" height="167" src="/loading.gif" alt="loading img" />
           </div>
         </div>
       </Div>

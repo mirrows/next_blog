@@ -339,7 +339,7 @@ export default function Home({ bing, artical }: Props) {
             onSlideChangeTransitionEnd={slideChange}
           >
             {pics.map((pic, ind) => (<SwiperSlide key={ind} className="pic_wrap">
-              <LazyImage src={pic.url} className={"pic_item"} alt="bing" />
+              <LazyImage src={pic.url} className={"pic_item"} width="1920" height="1080" alt="bing" />
             </SwiperSlide>))}
           </MySwiper>
           <div className='main_content'>
@@ -369,7 +369,7 @@ export default function Home({ bing, artical }: Props) {
                       />
                     </span>
                   </div>
-                  <LazyImage className='artical_img' src={artical.img} alt={artical.title} />
+                  <LazyImage className='artical_img' width="400" height="200" src={artical.img} alt={artical.title} />
                 </Link>
               ))}
             </div>

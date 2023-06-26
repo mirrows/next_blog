@@ -307,6 +307,7 @@ export default function About({ artical: atl, comments: cmts }: Props) {
           <div className='blog_left'>
             <div className="blog_content blog_wrap" dangerouslySetInnerHTML={{ __html: parseBody(xss(marked.parse(artical?.body || ''))) }} />
             <div className='blog_wrap add_comment'>
+              <label htmlFor="comments_input">添加评论</label>
               <div className='operate_wrap'>
                 <img src="/code.svg" className='preview' alt='preview' onClick={handlePreview} />
                 <button className='submit' aria-label='submit comment' onClick={submit}>add comment</button>
@@ -314,7 +315,7 @@ export default function About({ artical: atl, comments: cmts }: Props) {
               <div className='preview_detail_wrap' style={{ display: isPreview ? 'block' : 'none' }}>
                 <div ref={content} className='blog_content preview_detail'></div>
               </div>
-              <textarea ref={input} className='text_area' rows={8} style={{ display: isPreview ? 'none' : 'block' }}></textarea>
+              <textarea id="comments_input" ref={input} className='text_area' rows={8} style={{ display: isPreview ? 'none' : 'block' }} placeholder='此处添加评论' aria-label='edit some comments'></textarea>
             </div>
           </div>
           <div className='comments_wrap'>
