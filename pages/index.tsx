@@ -310,13 +310,7 @@ export default function Home({ bing, artical }: Props) {
     })
   }
   useEffect(() => {
-    if (stone.data.userInfo?.login) {
-      setOwner(stone.data.userInfo.login === env.user)
-    } else {
-      stone.on('github', (data: UserInfo) => {
-        setOwner(data.login === env.user)
-      })
-    }
+    stone.isGithubOwner((isowner) => setOwner(isowner))
     queryBing();
     queryArticalList();
   }, [])

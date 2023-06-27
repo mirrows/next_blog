@@ -11,6 +11,7 @@ const DIV = styled.div`
   }
   .img{
     max-width: 100%;
+    height: unset;
   }
   .back{
     display: block;
@@ -32,7 +33,7 @@ export default function Error() {
       </Head>
       <main>
         <DIV className='wrap'>
-          <LazyImage className='img' src='https://miro.medium.com/v2/resize:fit:1400/1*zE2qnVTJehut7B8P2aMn3A.gif' />
+          <LazyImage className='img' width="800" height="600" src='https://empty.t-n.top/pub_lic/2023_06_19/pic1687140916054456.gif' />
           <Link href="/" className='back' aria-label="back to homepage">BACK</Link>
         </DIV>
       </main>

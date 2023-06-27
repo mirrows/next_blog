@@ -265,6 +265,7 @@ export default function Blog({ artical: atl, comments: cmts }: Props) {
   const page = useRef(1)
   const [comments, setComments] = useState<Comment[]>([...cmts])
   const [isOwner, setOwner] = useState(false)
+  const router = useRouter();
   const mdify = () => {
     if (!input.current?.value) return;
     const body = xss(marked.parse(input.current.value))
@@ -298,15 +299,12 @@ export default function Blog({ artical: atl, comments: cmts }: Props) {
     })
   }
   useEffect(() => {
+    if(!artical.labels.some(e => e.name === 'blog')) {
+      router.replace('/404')
+    }
     stone.data.emit()
     // md解析的图片会添加懒加载机制，此时必须手动检查一次是否在可视区内
-    if (stone.data.userInfo?.login) {
-      setOwner(stone.data.userInfo.login === env.user)
-    } else {
-      stone.on('github', (data: UserInfo) => {
-        setOwner(data.login === env.user)
-      })
-    }
+    stone.isGithubOwner((isowner) => setOwner(isowner))
   }, [])
   return (
     <>

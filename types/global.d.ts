@@ -64,7 +64,6 @@ export type GblData = {
   stayTime: number,
   bing: BingPic[],
   emit: Function,
-  isOwner: boolean,
   [key: string]: any
 }
 

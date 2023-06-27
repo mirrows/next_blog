@@ -1,6 +1,7 @@
 import { EventEmits, GblData } from "@/types/global";
 import { deepClone } from "./common";
 import { NormalObj } from "@/types/common";
+import { UserInfo } from "@/types/github";
 
 const gbData: GblData = {
   number: 0,
@@ -10,7 +11,6 @@ const gbData: GblData = {
   preview: {},
   stayTime: 0,
   bing: [],
-  isOwner: false,
   emit: () => {}
 }
 
@@ -42,6 +42,15 @@ export const stone = {
     if(!events?.length) return
     for(let i = 0; i < events.length; i++) {
       await events[i](...props)
+    }
+  },
+  isGithubOwner(cb: (isOwner: boolean) => void) {
+    if (stone.data.userInfo?.login) {
+      cb(stone.data.userInfo.login === env.user)
+    } else {
+      stone.on('github', (data: UserInfo) => {
+        cb(data.login === env.user)
+      })
     }
   }
 }
