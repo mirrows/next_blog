@@ -1,4 +1,4 @@
-import { Preview } from "@/types/global"
+import { IPDetail, Preview } from "@/types/global"
 import { stone } from "@/utils/global"
 import { useEffect, useState } from "react"
 import styled from "styled-components"
@@ -53,15 +53,17 @@ const DIV = styled.div`
 export default function PreviewPannel() {
   const [preview, setPreview] = useState<Partial<Preview>>()
   const [stayTime, setStayTime] = useState(0)
+  const [ipDetail, setIPDetail] = useState<Partial<IPDetail>>({})
   const [totalStayTime, setTotalStayTime] = useState<number[]>([])
   const queryPreviewData = () => {
-    stone.on('ip', ({ data, detail }: any) => {
+    stone.on('ip', ({ data, detail }) => {
       if(!data) return;
       const preview = {
         ip: detail?.ip,
         data: data.data,
       }
       setPreview(preview)
+      setIPDetail(detail)
     })
   }
   const setDate = (dateObj: Date, options: Partial<Time>) => {
@@ -128,6 +130,7 @@ export default function PreviewPannel() {
             String(Math.floor(stayTime % 60)).padStart(2, '0')
           }</span></span>}
       </div>
+      <div><span className="tag_item">IP来自：<span className="tag_value"></span>{ipDetail.country} {ipDetail.province} {ipDetail.city} {ipDetail.area}</span></div>
       <div className="items_wrap">
         {!!preview?.data?.total && <span className="tag_item">总访问数：<span className="tag_value">{preview?.data.total}</span></span>}
         <span className="tag_item">网站已运行：<span className="tag_value">{

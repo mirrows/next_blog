@@ -9,6 +9,17 @@ export type Preview = {
   },
 }
 
+export type IPDetail = {
+  area: string,
+  city: string,
+  country: string,
+  ip: string,
+  isp: string,
+  net: string,
+  province: string,
+  short_name: string,
+}
+
 export type BingPic = {
   url: string,
   title: string,
@@ -55,4 +66,9 @@ export type GblData = {
   emit: Function,
   isOwner: boolean,
   [key: string]: any
+}
+
+export type EventEmits = {
+  'ip': (props: { data: {data: Preview['data']}, detail: IPDetail }) => void,
+  'github': (info: UserInfo) => void,
 }

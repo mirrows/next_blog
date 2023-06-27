@@ -10,6 +10,7 @@ import { mangle } from "marked-mangle";
 import LazyImage from '@/components/LazyImage'
 import { useRouter } from 'next/router'
 import { useLazyImgs } from '@/utils/imgTool'
+import { IPDetail } from '@/types/global'
 marked.use(mangle())
 
 const Div = styled.div`
@@ -22,11 +23,13 @@ const Div = styled.div`
   }
 `
 
+
+
 export default function App({ Component, pageProps }: AppProps) {
   const statistics = async () => {
     // if (process.env.NODE_ENV !== 'production') return
     let detail = sessionStorage.detail
-    if(!detail) {
+    if (!detail) {
       const data = await ipQuery()
       detail = data
       sessionStorage.setItem('detail', JSON.stringify(detail))
@@ -34,7 +37,7 @@ export default function App({ Component, pageProps }: AppProps) {
       try {
         detail = JSON.parse(detail)
       } catch {
-        const data = await ipQuery()
+        const data: IPDetail = await ipQuery()
         detail = data
         sessionStorage.setItem('detail', JSON.stringify(detail))
       }
@@ -63,7 +66,7 @@ export default function App({ Component, pageProps }: AppProps) {
   }
   const { emit } = useLazyImgs()
   useEffect(() => {
-    if(!stayTime.current) {
+    if (!stayTime.current) {
       statistics()
       stayTime.current = stayTime.current + 1
     }

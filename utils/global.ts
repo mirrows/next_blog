@@ -1,4 +1,4 @@
-import { GblData } from "@/types/global";
+import { EventEmits, GblData } from "@/types/global";
 import { deepClone } from "./common";
 import { NormalObj } from "@/types/common";
 
@@ -21,6 +21,8 @@ export const env = {
   loadingGif: process.env.NEXT_PUBLIC_LOADING_GIF,
 }
 
+
+
 export const stone = {
   data: { ...gbData },
   events: {} as NormalObj<Function[]>,
@@ -31,11 +33,11 @@ export const stone = {
     this.data = { ...this.data, ...newData };
     localStorage.setItem('tmpData', JSON.stringify(stone.data))
   },
-  on(name: string, cb: Function) {
+  on<T extends keyof EventEmits>(name: T, cb: EventEmits[T]) {
     this.events[`event_${name}`] || (this.events[`event_${name}`] = [])
     this.events[`event_${name}`].push(cb)
   },
-  async emit(name: string, ...props: any) {
+  async emit<T extends keyof EventEmits>(name: T, ...props: Parameters<EventEmits[T]>) {
     const events = this.events[`event_${name}`]?.filter((e: Function) => !!e) || []
     if(!events?.length) return
     for(let i = 0; i < events.length; i++) {
