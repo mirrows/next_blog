@@ -31,7 +31,7 @@ function LazyImage({ src, className, ...props }: TProps) {
         }
     }, [src])
     return(
-        <Image
+        <img
             className={className ? `lazy ${className}` : 'lazy'}
             ref={imgRef}
             src={imgSrc}
