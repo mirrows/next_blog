@@ -70,7 +70,12 @@ export default function Demos() {
       name: '2048',
       icon: 'https://empty.t-n.top/pub_lic/2023_06_26/pic1687749579236835.png',
       link: '/demos/2048',
-    }
+    },
+    {
+      name: '图床列表',
+      icon: 'https://empty.t-n.top/pub_lic/2023_07_03/pic1688351230372957.jpg',
+      link: '/demos/imgSource',
+    },
   ])
   useEffect(() => {
     isShow(true)
