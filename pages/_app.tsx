@@ -42,6 +42,7 @@ export default function App({ Component, pageProps }: AppProps) {
         sessionStorage.setItem('detail', JSON.stringify(detail))
       }
     }
+    if(!detail.ip) return
     const data = await visitorsData(detail.ip)
     const preview = {
       ip: detail?.ip,

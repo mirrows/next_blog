@@ -28,6 +28,13 @@ export const ipQuery = () => {
   })
 }
 
+// export const ipQuery = () => {
+//   return req({
+//     path: 'http://ip.taobao.com/service/getIpInfo2.php',
+//     method: 'post',
+//   })
+// }
+
 
 export const listArtical = (number?: number) => {
   return query({
