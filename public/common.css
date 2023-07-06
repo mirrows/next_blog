@@ -33,8 +33,30 @@ svg {
 }
 
 button{
+  cursor: pointer;
   transition: .3s;
 }
+
+input{
+  outline: none;
+}
+
+input.normal_input{
+  padding: 4px 10px;
+  border-radius: 6px;
+  border-color: #000;
+  box-sizing: border-box;
+}
+
+button.normal_btn{
+  padding: 4px 20px;
+  background-color: #000;
+  border: 1px solid #000;
+  border-radius: 6px;
+  font-size: 1rem;
+  color:#fff;
+}
+
 button:hover{
   box-shadow: 3px 3px 5px -1px #666;
 }
