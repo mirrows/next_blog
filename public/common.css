@@ -61,6 +61,19 @@ button:hover{
   box-shadow: 3px 3px 5px -1px #666;
 }
 
+.scroll_er{
+  width: 100%;
+  overflow-x: auto;
+}
+.scroll_er::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+/* 滚动条滑块 */
+.scroll_er::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #a5a5a5;
+}
 
 table{
   border-collapse:collapse;

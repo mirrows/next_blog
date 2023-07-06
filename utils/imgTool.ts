@@ -1,3 +1,4 @@
+import Compressor from "compressorjs";
 import { useCallback, useEffect, useRef } from "react";
 
 export const base64ToFile = (base64: string, fileName: string) => {
@@ -38,11 +39,41 @@ export const base64ToWebp = (base64: string, name: string, type = 'base64') => {
 
 }
 
+export const file2Base64 = (file: File | Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = (e) => {
+      resolve(e.target?.result as string);
+    };
+    // readAsDataURL
+    fileReader.readAsDataURL(file);
+    fileReader.onerror = () => {
+      reject(new Error('blobToBase64 error'));
+    };
+  })
+}
+
+export const fileCompressor = (file: File, options: any): Promise<File | Blob> => {
+  return new Promise((resolve, reject) => {
+    new Compressor(file, {
+      ...options,
+      success(blob) {
+        resolve(blob)
+      },
+      error(err) {
+        reject(err);
+      }
+    })
+  })
+}
+
+
+
 export const useLazyImgs = (path?: string, cd?: Function) => {
   const domsRef = useRef<NodeListOf<any>>()
   const imgListener = useCallback((path = 'lazy') => {
     let realPath = 'lazy';
-    if (typeof path == 'string'){
+    if (typeof path == 'string') {
       // 有可能是wheel事件对象
       realPath = path
     }
@@ -53,11 +84,11 @@ export const useLazyImgs = (path?: string, cd?: Function) => {
     const clientWidth = document.documentElement.clientWidth
     const arr = [];
     list.forEach((img, i) => {
-      if(
+      if (
         !(img.getBoundingClientRect().top < -img.clientHeight
-        || img.getBoundingClientRect().top > 1.5 * clientHeight)
+          || img.getBoundingClientRect().top > 1.5 * clientHeight)
         && !(img.getBoundingClientRect().left < -clientWidth
-        || img.getBoundingClientRect().left > 1.5 * clientWidth)
+          || img.getBoundingClientRect().left > 1.5 * clientWidth)
       ) {
         setTimeout(() => {
           if (img.dataset.src) {
