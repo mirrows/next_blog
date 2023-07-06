@@ -14,7 +14,6 @@ import LazyImage from '@/components/LazyImage';
 import Link from 'next/link';
 import { useLazyImgs } from '@/utils/imgTool';
 import { env, stone } from '@/utils/global';
-import { UserInfo } from '@/types/github';
 import { useRouter } from 'next/router';
 import DateText from '@/components/SsrRender/Timer';
 
@@ -268,25 +267,25 @@ const Div = styled.div`
   }
 `
 
-export default function Home({ bing, artical }: Props) {
-  const [pics, setPics] = useState<BingPic[]>(bing || []);
+export default function Home({ artical }: Props) {
+  const [pics, setPics] = useState<BingPic[]>([...Array(7)]);
   const [ind, setInd] = useState(0);
   const [total, setTotal] = useState(0);
   const swiperRef = useRef<Swiper | null>(null);
   const [articals, setArtical] = useState<Artical[]>(artical || []);
   const { emit } = useLazyImgs('.imgs_wrap .lazy');
   const [isOwner, setOwner] = useState(false)
-  const slideChange = ({realIndex}: {realIndex: number}) => {
+  const slideChange = ({ realIndex }: { realIndex: number }) => {
     setInd(realIndex)
     emit()
   }
   const router = useRouter();
   const queryBing = () => {
-    bingQuery().then(({data}) => {
+    bingQuery().then(({ data }) => {
       const pics = data.map((pic: BingPic) => {
         const { url, title, copyright, copyrightlink, enddate } = pic;
         let [content, cpright] = ['', '']
-        copyright.replace(/^(.+)\((.+)\)$/, (oldval, a, b)=>{
+        copyright.replace(/^(.+)\((.+)\)$/, (oldval, a, b) => {
           content = a.trim();
           cpright = b.trim();
           return oldval;
@@ -304,7 +303,7 @@ export default function Home({ bing, artical }: Props) {
     })
   }
   const queryArticalList = () => {
-    listArtical().then(({data, total}) => {
+    listArtical().then(({ data, total }) => {
       setArtical(data);
       setTotal(total)
     })
@@ -337,7 +336,7 @@ export default function Home({ bing, artical }: Props) {
             onSlideChangeTransitionEnd={slideChange}
           >
             {pics.map((pic, ind) => (<SwiperSlide key={ind} className="pic_wrap">
-              <LazyImage src={pic.url} className={"pic_item"} width="1920" height="1080" alt="bing" />
+              <LazyImage src={pic?.url || env.loadingGif || ''} className={"pic_item"} width="1920" height="1080" alt="bing" />
             </SwiperSlide>))}
           </MySwiper>
           <div className='main_content'>
@@ -360,7 +359,7 @@ export default function Home({ bing, artical }: Props) {
                       <span>{artical.title}</span>
                     </h3>
                     <div className='artical_detail hide_450'>{artical.body}</div>
-                    <span className='artical_update_time'>—— updated at 
+                    <span className='artical_update_time'>—— updated at
                       <DateText
                         render={(formattedDate) => <span>{formattedDate}</span>}
                         value={artical.updated_at}
@@ -383,9 +382,9 @@ export default function Home({ bing, artical }: Props) {
                   </button>
                 </div>
                 <div className="bing_card">
-                  <h3 className='bing_msg_title'>{pics[ind].title}<div className='time'>——{pics[ind].date}</div></h3>
-                  <div className='bing_msg_content'>{pics[ind].content}</div>
-                  <a className="copyright" href={pics[ind].copyrightlink} aria-label='more message about this bing image' target="_blank">{pics[ind].copyright}</a>
+                  <h3 className='bing_msg_title'>{pics[ind]?.title}<div className='time'>——{pics[ind]?.date}</div></h3>
+                  <div className='bing_msg_content'>{pics[ind]?.content}</div>
+                  <a className="copyright" href={pics[ind]?.copyrightlink} aria-label='more message about this bing image' target="_blank">{pics[ind]?.copyright}</a>
                 </div>
               </div>
             </div>
@@ -404,35 +403,14 @@ export default function Home({ bing, artical }: Props) {
 }
 
 type Props = {
-  bing?: BingPic[],
   artical?: Artical[],
   total?: number
 }
 
 export const getStaticProps = async (context: any) => {
   const props: Props = {}
-  const reqs = [bingQuery(), listArtical()];
-  const [bings, articals] = await Promise.allSettled(reqs);
-  if (bings.status === 'fulfilled' && bings.value?.data) {
-    const data = bings.value.data
-    props.bing = data.map((pic: BingPic) => {
-      const { url, title, copyright, copyrightlink, enddate } = pic;
-      let [content, cpright] = ['', '']
-      copyright.replace(/^(.+)\((.+)\)$/, (oldval, a, b)=>{
-        content = a.trim();
-        cpright = b.trim();
-        return oldval;
-      })
-      return {
-        url,
-        title,
-        content,
-        copyright: cpright,
-        copyrightlink,
-        date: `${enddate.slice(0, 4)}/${enddate.slice(4, 6)}/${enddate.slice(6, 8)}`,
-      }
-    })
-  }
+  const reqs = [listArtical()];
+  const [articals] = await Promise.allSettled(reqs);
   if (articals.status === 'fulfilled' && articals.value?.data) {
     const data = articals.value.data
     props.artical = data
