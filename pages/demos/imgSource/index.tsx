@@ -64,13 +64,25 @@ const DIV = styled.div`
     .pics_item_wrap{
         display: grid;
         justify-content: center;
-        grid-template-columns: repeat(auto-fill, 60px);
-        grid-template-rows: repeat(auto-fill, 150px);
-        gap: 5px;
+        grid-template-columns: repeat(auto-fill, 130px);
+        grid-template-rows: repeat(auto-fill, 320px);
+        gap: 10px;
         min-width: 200px;
         max-width: 1200px;
         width: 100%;
-        margin: 5px 0;
+        margin: 10px 0;
+    }
+    @media (max-width: 769px) {
+        .pics_item_wrap{
+            grid-template-columns: repeat(auto-fill, 80px);
+            grid-template-rows: repeat(auto-fill, 180px);
+            gap: 5px;
+            margin: 5px 0;
+        }
+        .img_item{
+            width: 80px;
+            height: 180px;
+        }
     }
 `
 
@@ -153,7 +165,7 @@ export default function ImgSource({ list }: Props) {
                             <div className="pics_item_wrap">
                                 {pics[fold.path]?.map(pic => (
                                     <div key={pic.name} className="pic_item_wrap">
-                                        <LazyImage src={pic.cdn_url} width="60" height="150" />
+                                        <LazyImage className="img_item" src={pic.cdn_url} width="130" height="320" />
                                     </div>
                                 ))}
                             </div>
