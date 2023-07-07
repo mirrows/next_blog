@@ -100,7 +100,7 @@ const DIV = styled.div`
     }
 `
 
-export default function ImgUpload({ clickable = true, children, personal = false, ...props }: Props) {
+export default function ImgUpload({ clickable = true, children, personal = false, onFinish = () => { }, ...props }: Props) {
     const wrapRef = useRef<HTMLDivElement | null>(null)
     const inputRef = useRef<HTMLInputElement | null>(null)
     const [files, setFiles] = useState<File[]>([])
@@ -177,6 +177,7 @@ export default function ImgUpload({ clickable = true, children, personal = false
             newMap[total[i + files.length].id] = status === 'LOADING' ? 'SUCCESS' : status
             setUploadStatusMap({ ...newMap })
         }
+        onFinish();
         setUrls((urls) => urls.filter((_, i) => uploadStatusMap[total[i + files.length].id] === 'ERROR'))
         setFiles((files) => files.filter((_, i) => uploadStatusMap[total[i].id] === 'ERROR'))
     }

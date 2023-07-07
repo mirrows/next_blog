@@ -112,10 +112,9 @@ export default function ImgSource({ list }: Props) {
     const [pics, setPics] = useState<PicsMap>({})
     const page = useRef(0)
 
-    const queryPics = async () => {
-        const path = folders[page.current]?.path
+    const queryPics = async (num?: number) => {
+        const path = folders[typeof num === 'number' ? num : page.current++]?.path
         if (!path) return
-        page.current++
         const { data } = await queryPicList(path);
         setPics(val => ({
             ...val,
@@ -128,9 +127,13 @@ export default function ImgSource({ list }: Props) {
         setFolders(data)
     }
     const firstTime = async () => {
-        await queryPics();
-        await queryPics();
-        await queryPics();
+        await queryPics(0);
+        await queryPics(1);
+        await queryPics(2);
+    }
+    const afterUpload = async () => {
+        await queryFolder();
+        queryPics(0);
     }
     useEffect(() => {
         if (page.current) return
@@ -148,7 +151,7 @@ export default function ImgSource({ list }: Props) {
         </Head>
         <main>
             <DIV>
-                <ImgUpload className="uploader_wrap">
+                <ImgUpload className="uploader_wrap" onFinish={afterUpload}>
                     <div>
                         <SVGIcon width="32" style={{ fill: 'gray' }} type="plus_no_outline" />
                     </div>
