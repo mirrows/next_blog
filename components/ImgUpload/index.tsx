@@ -17,7 +17,7 @@ type UploadType = {
 }
 
 const DIV = styled.div`
-    .upload_footer{
+    .mm-footer{
         /* display: flex;
         justify-content: space-between;
         align-items: center; */
