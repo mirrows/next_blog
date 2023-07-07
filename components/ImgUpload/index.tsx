@@ -141,7 +141,6 @@ export default function ImgUpload({ clickable = true, children, personal = false
         e.target.files?.length && setFiles([...Array.from(e.target.files)])
     }
     const uploadFile = async (file: File, options: any, path: string) => {
-        console.log(file.type)
         const blob = file.type.match('gif') && !path.match('mini') ? file : await fileCompressor(file, options)
         const base64 = await file2Base64(blob);
         const result = await uploadBase64({ content: base64.split(',')[1], path })
@@ -156,30 +155,28 @@ export default function ImgUpload({ clickable = true, children, personal = false
             let status: UploadType['uploadStatus'] = 'LOADING';
             newMap[total[i].id] = status
             setUploadStatusMap({ ...newMap })
-            await uploadFile(files[i], { quality: 0.1, mimeType: 'image/jpeg' }, `${personal ? 'personal/' : ''}mini/${path}`).catch(() => {
+            const mini = await uploadFile(files[i], { quality: 0.1, mimeType: 'image/jpeg' }, `${personal ? 'personal/' : ''}mini/${path}`)
+            const normal = await uploadFile(files[i], { quality: 1024 * 1024 * 2 > files[i].size ? 1024 * 1024 * 2 / files[i].size : 0.8 }, `${personal ? 'personal/' : ''}normal/${path}`)
+            if (normal.code || mini.code) {
                 status = 'ERROR'
-            })
-            await uploadFile(files[i], { quality: 1024 * 1024 * 2 > files[i].size ? 1024 * 1024 * 2 / files[i].size : 0.8 }, `${personal ? 'personal/' : ''}normal/${path}`).catch(() => {
-                status = 'ERROR'
-            })
+            }
             newMap[total[i].id] = status === 'LOADING' ? 'SUCCESS' : status
             setUploadStatusMap({ ...newMap })
         }
         for (let i = 0; i < urls.length; i++) {
             let status: UploadType['uploadStatus'] = 'LOADING';
             newMap[total[i + files.length].id] = status
-            await uploadUrl({ url: urls[i], path: `${personal ? 'personal/' : ''}mini/${Format(new Date(), 'YYYY_MM_DD')}` }).catch(() => {
+            const mini = await uploadUrl({ url: urls[i], path: `${personal ? 'personal/' : ''}mini/${Format(new Date(), 'YYYY_MM_DD')}` })
+            const normal = await uploadUrl({ url: urls[i], path: `${personal ? 'personal/' : ''}normal/${Format(new Date(), 'YYYY_MM_DD')}` })
+            if (normal.code || mini.code) {
                 status = 'ERROR'
-            })
-            await uploadUrl({ url: urls[i], path: `${personal ? 'personal/' : ''}normal/${Format(new Date(), 'YYYY_MM_DD')}` }).catch(() => {
-                status = 'ERROR'
-            })
+            }
             newMap[total[i + files.length].id] = status === 'LOADING' ? 'SUCCESS' : status
             setUploadStatusMap({ ...newMap })
         }
         onFinish();
-        setUrls((urls) => urls.filter((_, i) => uploadStatusMap[total[i + files.length].id] === 'ERROR'))
-        setFiles((files) => files.filter((_, i) => uploadStatusMap[total[i].id] === 'ERROR'))
+        setUrls((urls) => urls.filter((_, i) => newMap[total[i + files.length].id] === 'ERROR'))
+        setFiles((files) => files.filter((_, i) => newMap[total[i].id] === 'ERROR'))
     }
     const inputUrl = () => {
         setUrls(urls => Array.from(new Set([...urls, urlInput])))
@@ -251,6 +248,7 @@ export default function ImgUpload({ clickable = true, children, personal = false
                     />
                     <SVGIcon className="enter_icon" type="enter" onClick={inputUrl} />
                 </div>
+                666
                 {!!total.length && <span className="file_wrap">
                     {total.length}
                 </span>}
