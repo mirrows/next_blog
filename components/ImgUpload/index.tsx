@@ -18,14 +18,17 @@ type UploadType = {
 
 const DIV = styled.div`
     .upload_footer{
-        display: flex;
+        /* display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: center; */
         min-height: 24px;
         margin-top: 10px;
+        text-align: left;
     }
     .url_input_wrap{
+        display: inline-block;
         position: relative;
+        vertical-align: middle;
         .url_input_wrap{
             margin-right: 10px;
         }
@@ -52,10 +55,11 @@ const DIV = styled.div`
         }
     }
     .file_wrap{
-        display: flex;
+        display: inline-block;
+        /* display: flex;
         align-items: flex-end;
         justify-content: center;
-        flex: 1;
+        flex: 1; */
         padding: 0 8px;
         margin: 0 10px;
         white-space: nowrap;
@@ -90,6 +94,9 @@ const DIV = styled.div`
         left: 5px;
         bottom: 5px;
         width: 20px;
+    }
+    .submit_btn{
+        float: right;
     }
 `
 
@@ -235,7 +242,6 @@ export default function ImgUpload({ clickable = true, children, personal = false
                     </div>
                 ))}
             </div>
-            666
             <div className="upload_footer">
                 <div className="url_input_wrap" onClick={e => e.stopPropagation()}>
                     <input
@@ -247,9 +253,9 @@ export default function ImgUpload({ clickable = true, children, personal = false
                     />
                     <SVGIcon className="enter_icon" type="enter" onClick={inputUrl} />
                 </div>
-                {!!total.length && <div className="file_wrap">
-                    <span>{total.length}</span>
-                </div>}
+                {!!total.length && <span className="file_wrap">
+                    {total.length}
+                </span>}
                 {!!total.length && <button className="normal_btn submit_btn" onClick={handleSubmit}>submit</button>}
             </div>
         </DIV>
