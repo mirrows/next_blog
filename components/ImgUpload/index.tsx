@@ -18,9 +18,9 @@ type UploadType = {
 
 const DIV = styled.div`
     .mm-footer{
-        /* display: flex;
+        display: flex;
         justify-content: space-between;
-        align-items: center; */
+        align-items: center;
         min-height: 24px;
         margin-top: 10px;
         text-align: left;
