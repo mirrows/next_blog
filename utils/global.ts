@@ -11,7 +11,7 @@ const gbData: GblData = {
   preview: {},
   stayTime: 0,
   bing: [],
-  emit: () => {}
+  emit: () => { }
 }
 
 export const env = {
@@ -39,8 +39,8 @@ export const stone = {
   },
   async emit<T extends keyof EventEmits>(name: T, ...props: Parameters<EventEmits[T]>) {
     const events = this.events[`event_${name}`]?.filter((e: Function) => !!e) || []
-    if(!events?.length) return
-    for(let i = 0; i < events.length; i++) {
+    if (!events?.length) return
+    for (let i = 0; i < events.length; i++) {
       await events[i](...props)
     }
   },
@@ -57,7 +57,11 @@ export const stone = {
 
 if (typeof window !== "undefined") {
   if (localStorage.tmpData) {
-    stone.set(JSON.parse(localStorage.tmpData))
+    const data = JSON.parse(localStorage.tmpData)
+    if (Date.now() - (data.lastTime || 0) > 3 * 24 * 60 * 60 * 1000) {
+      data.token = ''
+    }
+    stone.set(data)
     // localStorage.removeItem('tmpData')
   }
 

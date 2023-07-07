@@ -108,8 +108,8 @@ const NavHeader = () => {
   }
   const queryCurUser = () => {
     queryUser().then(data => {
-      if(!data.id) return;
-      stone.set({ userInfo: data })
+      if (!data.id) return;
+      stone.set({ userInfo: data, lastTime: Date.now() })
       setUser(data)
       stone.emit('github', data)
     })
@@ -123,7 +123,6 @@ const NavHeader = () => {
       if (!stone.data.token) return;
       if (stone.data.userInfo?.login) {
         setUser(stone.data.userInfo as UserInfo)
-        stone.set({ userInfo: stone.data.userInfo })
         return
       }
       queryCurUser();
