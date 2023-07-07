@@ -8,14 +8,20 @@ import SVGIcon from "../SVGIcon"
 type Props = {
     clickable?: boolean,
     children: JSX.Element | JSX.Element[],
+    personal?: boolean,
     [key: string]: any,
+}
+
+type UploadType = {
+    uploadStatus: 'WAIT' | 'SUCCESS' | 'ERROR' | 'LOADING',
 }
 
 const DIV = styled.div`
     .upload_footer{
         display: flex;
         justify-content: space-between;
-        align-items: stretch;
+        align-items: center;
+        min-height: 24px;
         margin-top: 10px;
     }
     .url_input_wrap{
@@ -27,9 +33,9 @@ const DIV = styled.div`
             flex: 1 1 0;
             width: 100%;
             height: 100%;
-            min-height: 28px;
             padding-right: 36px;
             box-sizing: border-box;
+            font-size: 1rem;
         }
         .enter_icon{
             position: absolute;
@@ -51,12 +57,17 @@ const DIV = styled.div`
         justify-content: center;
         flex: 1;
         padding: 0 8px;
-        border: 3px dashed gray;
         margin: 0 10px;
-        border-radius: 4px;
         white-space: nowrap;
         font-size: 1rem;
         color: gray;
+    }
+    .tmp_wrap{
+        display: flex;
+        max-height: 215px;
+    }
+    .tmp_item_wrap{
+        position: relative;
     }
     .tmp_item{
         width: 40px;
@@ -64,12 +75,25 @@ const DIV = styled.div`
         object-fit: cover;
         margin: 5px;
     }
-    .tmp_wrap{
-        max-height: 215px;
+    .tmp_del_btn{
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 15px;
+        padding: 0 0 5px 5px;
+        border-radius: 0 0 0 20px;
+        fill: #fff;
+        background-color: #000;
+    }
+    .tmp_status_btn{
+        position: absolute;
+        left: 5px;
+        bottom: 5px;
+        width: 20px;
     }
 `
 
-export default function ImgUpload({ clickable = true, children, ...props }: Props) {
+export default function ImgUpload({ clickable = true, children, personal = false, ...props }: Props) {
     const wrapRef = useRef<HTMLDivElement | null>(null)
     const inputRef = useRef<HTMLInputElement | null>(null)
     const [files, setFiles] = useState<File[]>([])
@@ -78,15 +102,21 @@ export default function ImgUpload({ clickable = true, children, ...props }: Prop
     const win = useRef(typeof window !== "undefined" ? window?.URL || window?.webkitURL : undefined)
     const total = useMemo(() => {
         return [
-            ...files.map(e => ({
-                type: 'file',
-                src: win.current?.createObjectURL(e) || '',
-            })),
+            ...files.map(e => {
+                const src = win.current?.createObjectURL(e) || ''
+                return {
+                    id: src.slice(30, 50),
+                    type: 'file',
+                    src,
+                }
+            }),
             ...urls.map(e => ({
+                id: e.slice(30, 50),
                 type: 'url',
                 src: e,
             }))]
     }, [urls, files])
+    const [uploadStatusMap, setUploadStatusMap] = useState<{ [key: string]: UploadType['uploadStatus'] }>({})
     const clickHandle = () => {
         if (!clickable) return
         inputRef.current?.click();
@@ -112,18 +142,36 @@ export default function ImgUpload({ clickable = true, children, ...props }: Prop
     }
     const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
+        const newMap = { ...uploadStatusMap };
         for (let i = 0; i < files.length; i++) {
             const name = 'pic' + Date.now() + String(Math.random()).slice(4, 7) + '.' + files[i].name.split('.').reverse()[0]
             const path = `${Format(new Date(), 'YYYY_MM_DD')}/${name}`
-            await uploadFile(files[i], { quality: 0.1 }, `mini/${path}`)
-            await uploadFile(files[i], { quality: 1024 * 1024 * 2 > files[i].size ? 1024 * 1024 * 2 / files[i].size : 0.8 }, `normal/${path}`)
+            let status: UploadType['uploadStatus'] = 'LOADING';
+            newMap[total[i].id] = status
+            setUploadStatusMap({ ...newMap })
+            await uploadFile(files[i], { quality: 0.1, mimeType: 'image/jpeg' }, `${personal ? 'personal/' : ''}mini/${path}`).catch(() => {
+                status = 'ERROR'
+            })
+            await uploadFile(files[i], { quality: 1024 * 1024 * 2 > files[i].size ? 1024 * 1024 * 2 / files[i].size : 0.8 }, `${personal ? 'personal/' : ''}normal/${path}`).catch(() => {
+                status = 'ERROR'
+            })
+            newMap[total[i].id] = status === 'LOADING' ? 'SUCCESS' : status
+            setUploadStatusMap({ ...newMap })
         }
         for (let i = 0; i < urls.length; i++) {
-            await uploadUrl({ url: urls[i], path: `mini/${Format(new Date(), 'YYYY_MM_DD')}` })
-            await uploadUrl({ url: urls[i], path: `normal/${Format(new Date(), 'YYYY_MM_DD')}` })
+            let status: UploadType['uploadStatus'] = 'LOADING';
+            newMap[total[i + files.length].id] = status
+            await uploadUrl({ url: urls[i], path: `${personal ? 'personal/' : ''}mini/${Format(new Date(), 'YYYY_MM_DD')}` }).catch(() => {
+                status = 'ERROR'
+            })
+            await uploadUrl({ url: urls[i], path: `${personal ? 'personal/' : ''}normal/${Format(new Date(), 'YYYY_MM_DD')}` }).catch(() => {
+                status = 'ERROR'
+            })
+            newMap[total[i + files.length].id] = status === 'LOADING' ? 'SUCCESS' : status
+            setUploadStatusMap({ ...newMap })
         }
-        setFiles([])
-        setUrls([])
+        setUrls((urls) => urls.filter((_, i) => uploadStatusMap[total[i + files.length].id] === 'ERROR'))
+        setFiles((files) => files.filter((_, i) => uploadStatusMap[total[i].id] === 'ERROR'))
     }
     const inputUrl = () => {
         setUrls(urls => Array.from(new Set([...urls, urlInput])))
@@ -133,6 +181,30 @@ export default function ImgUpload({ clickable = true, children, ...props }: Prop
         if (e.key !== 'Enter') return
         inputUrl()
     }
+    const deleteTmpPic = (pic: typeof total[number], i: number) => {
+        if (pic.type === 'file') {
+            setFiles((files) => {
+                const res = [...files]
+                res.splice(i, 1)
+                return res
+            })
+        } else if (pic.type === 'url') {
+            setUrls((urls) => {
+                const res = [...urls]
+                res.splice(i - files.length, 1)
+                return res
+            })
+        }
+    }
+    useEffect(() => {
+        setUploadStatusMap(obj => {
+            const map: { [key: string]: UploadType['uploadStatus'] } = {}
+            total.forEach(e => {
+                map[e.id] = obj[e.id] || 'WAIT'
+            })
+            return map
+        })
+    }, [total])
     useEffect(() => {
         console.log(total)
     }, [total])
@@ -150,8 +222,17 @@ export default function ImgUpload({ clickable = true, children, ...props }: Prop
                 onChange={handlefile}
             />
             <div className="scroll_er tmp_wrap" onClick={e => e.stopPropagation()}>
-                {total.map(e => (
-                    <img key={e.src?.slice(30, 50)} className="tmp_item" width="40" height="96" src={e.src} alt="" />
+                {total.map((e, i) => (
+                    <div key={e.id} className={`tmp_item_wrap upload_${uploadStatusMap[e.id]}`}>
+                        <img className="tmp_item" width="40" height="96" src={e.src} alt="" />
+                        <SVGIcon className="tmp_del_btn" type="close" onClick={() => deleteTmpPic(e, i)} />
+                        {{
+                            SUCCESS: <SVGIcon className="tmp_status_btn" type="yes" fill="green" />,
+                            ERROR: <SVGIcon className="tmp_status_btn" type="no" fill="red" />,
+                            WAIT: '',
+                            LOADING: <SVGIcon className="tmp_status_btn rotate" type="loading" fill="gray" />,
+                        }[uploadStatusMap[e.id]]}
+                    </div>
                 ))}
             </div>
             <div className="upload_footer">
@@ -166,7 +247,7 @@ export default function ImgUpload({ clickable = true, children, ...props }: Prop
                     <SVGIcon className="enter_icon" type="enter" onClick={inputUrl} />
                 </div>
                 {!!total.length && <div className="file_wrap">
-                    <span>total: {total.length}</span>
+                    <span>{total.length}</span>
                 </div>}
                 {!!total.length && <button className="normal_btn submit_btn" onClick={handleSubmit}>submit</button>}
             </div>
