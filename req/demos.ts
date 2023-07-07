@@ -34,3 +34,17 @@ export const uploadUrl = (params: UploadUrlParams) => {
     params,
   })
 }
+
+export const queryPicList = (path: string) => {
+  return query({
+    path: '/demos/queryPicList',
+    method: 'post',
+    headers: {
+      'content-type': 'application/json',
+      ...(stone.data.token ? { Authorization: `token ${stone.data.token}` } : {})
+    },
+    params: {
+      path,
+    }
+  })
+}

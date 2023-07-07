@@ -33,6 +33,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'p.t-n.top',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   async rewrites() {

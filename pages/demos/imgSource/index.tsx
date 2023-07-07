@@ -1,6 +1,9 @@
 import ImgUpload from "@/components/ImgUpload"
+import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
+import { queryPicList } from "@/req/demos"
 import Head from "next/head"
+import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 
 
@@ -26,9 +29,105 @@ const DIV = styled.div`
             width: 90%;
         }
     }
+    .switch_wrap{
+        margin: 10px;
+    }
+    .switch_btn{
+        padding: 4px 20px;
+        background-color: #fff;
+        border: 1px solid #000;
+        font-size: 1rem;
+        color: #000;
+    }
+    .switch_btn.active{
+        background-color: #000;
+        color: #fff;
+    }
+    .switch_btn:hover{
+        box-shadow: none;
+    }
+    .list_wrap{
+        max-width: 1200px;
+        padding: 0 10px 10px;
+        margin: auto;
+    }
+    .timestone{
+        width: fit-content;
+        padding: 10px 20px;
+        background-color: #000;
+        font-size: 1.2rem;
+        color: #fff;
+    }
+    .time_fold_wrap{
+        margin-bottom: 10px;
+    }
+    .pics_item_wrap{
+        display: grid;
+        justify-content: center;
+        grid-template-columns: repeat(auto-fill, 60px);
+        grid-template-rows: repeat(auto-fill, 150px);
+        gap: 5px;
+        min-width: 200px;
+        max-width: 1200px;
+        width: 100%;
+        margin: 5px 0;
+    }
 `
 
-export default function ImgSource() {
+type Folder = {
+    path: string,
+    name: string,
+}
+
+type Props = {
+    list: Folder[]
+}
+
+type Pic = {
+    download_url: string,
+    cdn_url: string,
+    sha: string,
+    name: string
+}
+
+type PicsMap = {
+    [key in Folder['path']]: Pic[]
+}
+
+export default function ImgSource({ list }: Props) {
+    const [folders, setFolders] = useState(list)
+    const [personal, setPersonal] = useState('')
+    const [pics, setPics] = useState<PicsMap>({})
+    const page = useRef(0)
+
+    const queryPics = async () => {
+        const path = folders[page.current]?.path
+        console.log(page.current, path)
+        if (!path) return
+        page.current++
+        const { data } = await queryPicList(path);
+        setPics(val => ({
+            ...val,
+            [path]: data
+        }))
+        return data
+    }
+    const queryFolder = async () => {
+        const { data } = await queryPicList('mini/');
+        setFolders(data)
+    }
+    const firstTime = async () => {
+        await queryPics();
+        await queryPics();
+        await queryPics();
+    }
+    useEffect(() => {
+        if (page.current) return
+        firstTime();
+    }, [folders])
+    useEffect(() => {
+        queryFolder();
+    }, [])
     return (<>
         <Head>
             <title>延迟图床</title>
@@ -44,7 +143,35 @@ export default function ImgSource() {
                     </div>
                     <span className="tips">图片最大不超过3m</span>
                 </ImgUpload>
+                <div className="switch_wrap">
+                    <button className={`switch_btn${personal ? '' : ' active'}`} onClick={() => setPersonal('')}>COMMON</button>
+                    <button className={`switch_btn${personal ? ' active' : ''}`} onClick={() => setPersonal('private/')}>PRIVATE</button>
+                </div>
+                <div className="list_wrap">
+                    {folders.map(fold => (
+                        <div key={fold.path} className="time_fold_wrap">
+                            <div className="timestone">{fold.name}</div>
+                            <div className="pics_item_wrap">
+                                {pics[fold.path]?.map(pic => (
+                                    <div key={pic.name} className="pic_item_wrap">
+                                        <LazyImage src={pic.cdn_url} width="60" height="150" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </DIV>
         </main>
     </>)
+}
+
+export const getStaticProps = async (context: any) => {
+    const props: Partial<Props> = {}
+    const list = await queryPicList('mini/');
+    if (list?.data) {
+        const data = list.data
+        props.list = data
+    }
+    return { props }
 }

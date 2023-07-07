@@ -212,9 +212,6 @@ export default function ImgUpload({ clickable = true, children, personal = false
             return map
         })
     }, [total])
-    useEffect(() => {
-        console.log(total)
-    }, [total])
     return (
         <DIV ref={wrapRef} {...props} onClick={clickHandle}>
             {!!total.length || children}
