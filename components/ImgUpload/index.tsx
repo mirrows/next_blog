@@ -106,7 +106,6 @@ export default function ImgUpload({ clickable = true, children, personal = false
     const [files, setFiles] = useState<File[]>([])
     const [urls, setUrls] = useState<string[]>([])
     const [urlInput, setUrlInput] = useState('')
-    const [show, setShow] = useState(false)
     const win = useRef(typeof window !== "undefined" ? window?.URL || window?.webkitURL : undefined)
     const total = useMemo(() => {
         return [
@@ -211,9 +210,6 @@ export default function ImgUpload({ clickable = true, children, personal = false
             return map
         })
     }, [total])
-    useEffect(() => {
-        setShow(true)
-    }, [])
     return (
         <DIV ref={wrapRef} {...props} onClick={clickHandle}>
             {!!total.length || children}
@@ -241,7 +237,7 @@ export default function ImgUpload({ clickable = true, children, personal = false
                     </div>
                 ))}
             </div>
-            {show && <div className="upload_footer">
+            <div className="mm-footer">
                 <div className="url_input_wrap" onClick={e => e.stopPropagation()}>
                     <input
                         className="normal_input url_input"
@@ -256,7 +252,7 @@ export default function ImgUpload({ clickable = true, children, personal = false
                     {total.length}
                 </span>}
                 {!!total.length && <button className="normal_btn submit_btn" onClick={handleSubmit}>submit</button>}
-            </div>}
+            </div>
         </DIV>
     )
 }
