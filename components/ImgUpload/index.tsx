@@ -38,11 +38,11 @@ const DIV = styled.div`
             height: 100%;
             padding-right: 36px;
             box-sizing: border-box;
-            font-size: 1rem;
+            font-size: 12px;
         }
         .enter_icon{
             position: absolute;
-            right: 6px;
+            right: 3px;
             top: 0;
             bottom: 0;
             height: 12px;
