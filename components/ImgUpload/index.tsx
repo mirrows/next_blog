@@ -235,6 +235,7 @@ export default function ImgUpload({ clickable = true, children, personal = false
                     </div>
                 ))}
             </div>
+            666
             <div className="upload_footer">
                 <div className="url_input_wrap" onClick={e => e.stopPropagation()}>
                     <input
