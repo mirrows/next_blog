@@ -115,12 +115,12 @@ export default function ImgUpload({ clickable = true, children, ...props }: Prop
         for (let i = 0; i < files.length; i++) {
             const name = 'pic' + Date.now() + String(Math.random()).slice(4, 7) + '.' + files[i].name.split('.').reverse()[0]
             const path = `${Format(new Date(), 'YYYY_MM_DD')}/${name}`
-            const base64Mini = await uploadFile(files[i], { quality: 0.1 }, `mini/${path}`)
-            const base64 = await uploadFile(files[i], { quality: 1024 * 1024 * 2 > files[i].size ? 1024 * 1024 * 2 / files[i].size : 0.8 }, `normal/${path}`)
-            console.log(base64Mini)
+            await uploadFile(files[i], { quality: 0.1 }, `mini/${path}`)
+            await uploadFile(files[i], { quality: 1024 * 1024 * 2 > files[i].size ? 1024 * 1024 * 2 / files[i].size : 0.8 }, `normal/${path}`)
         }
         for (let i = 0; i < urls.length; i++) {
-            const res = await uploadUrl({ url: urls[i], path: `${Format(new Date(), 'YYYY_MM_DD')}` })
+            await uploadUrl({ url: urls[i], path: `mini/${Format(new Date(), 'YYYY_MM_DD')}` })
+            await uploadUrl({ url: urls[i], path: `normal/${Format(new Date(), 'YYYY_MM_DD')}` })
         }
         setFiles([])
         setUrls([])
