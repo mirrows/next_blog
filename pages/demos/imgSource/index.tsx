@@ -102,7 +102,6 @@ export default function ImgSource({ list }: Props) {
 
     const queryPics = async () => {
         const path = folders[page.current]?.path
-        console.log(page.current, path)
         if (!path) return
         page.current++
         const { data } = await queryPicList(path);
