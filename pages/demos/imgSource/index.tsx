@@ -10,7 +10,9 @@ import UploadPicList from "./components/PicList"
 
 
 const DIV = styled.div`
-    margin: 80px auto;
+    padding: 80px 0;
+    margin: 0 auto;
+    background-image: url('https://empty.t-n.top/pub_lic/2023_07_08/pic1688805979076243.jpg');
     text-align: center;
     .uploader_wrap{
         width: 60%;
@@ -89,7 +91,7 @@ export default function ImgSource({ list }: Props) {
             <link rel="icon" href="/favicon.ico" />
         </Head>
         <main>
-            <DIV>
+            <DIV className="bg_wrap">
                 <ImgUpload
                     className="uploader_wrap"
                     personal={personal}
