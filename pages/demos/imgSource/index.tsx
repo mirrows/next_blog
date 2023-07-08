@@ -2,8 +2,9 @@ import ImgUpload from "@/components/ImgUpload"
 import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
 import { queryPicList } from "@/req/demos"
+import { useDebos } from "@/utils/common"
 import Head from "next/head"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 
 
@@ -84,6 +85,13 @@ const DIV = styled.div`
             height: 180px;
         }
     }
+    .no_more_tips{
+        font-size: 2rem;
+        font-weight: 700;
+        font-family: youyuan;
+        letter-spacing: 0.1rem;
+        color: gray;
+    }
 `
 
 type Folder = {
@@ -108,12 +116,16 @@ type PicsMap = {
 
 export default function ImgSource({ list }: Props) {
     const [folders, setFolders] = useState(list)
-    const [personal, setPersonal] = useState('')
+    const [personal, setPersonal] = useState(false)
     const [pics, setPics] = useState<PicsMap>({})
     const page = useRef(0)
-
-    const queryPics = async (num?: number) => {
-        const path = folders[typeof num === 'number' ? num : page.current++]?.path
+    const size = useRef(2)
+    const once = useRef(false)
+    const [end, setEnd] = useState(false)
+    const io = useRef<IntersectionObserver>()
+    const footer = useRef<HTMLDivElement | null>(null)
+    const queryPics = async (num: number) => {
+        const path = folders[num]?.path
         if (!path) return
         const { data } = await queryPicList(path);
         setPics(val => ({
@@ -127,20 +139,38 @@ export default function ImgSource({ list }: Props) {
         setFolders(data)
     }
     const firstTime = async () => {
-        await queryPics(0);
-        await queryPics(1);
-        await queryPics(2);
+        page.current += 1
+        for (let i = 0; i < size.current; i++) {
+            await queryPics(i + size.current * (page.current - 1));
+        }
+        if (folders.length <= page.current * size.current) {
+            setEnd(true)
+        }
     }
     const afterUpload = async () => {
         await queryFolder();
         queryPics(0);
     }
+    const dbs = useDebos(() => {
+        firstTime()
+    }, 500)
     useEffect(() => {
-        if (page.current) return
-        firstTime();
-    }, [folders])
-    useEffect(() => {
+        if (once.current) return
+        once.current = true
         queryFolder();
+        firstTime().then(() => {
+            io.current = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+                if (entries[0].intersectionRatio <= 0) return;
+                dbs()
+            }, {
+                rootMargin: '500px 0px'
+            });
+            footer.current && io.current?.observe(footer.current)
+        });
+        return () => {
+            footer.current && io.current?.unobserve(footer.current);
+            io.current?.disconnect();
+        }
     }, [])
     return (<>
         <Head>
@@ -151,19 +181,22 @@ export default function ImgSource({ list }: Props) {
         </Head>
         <main>
             <DIV>
-                <ImgUpload className="uploader_wrap" onFinish={afterUpload}>
+                <ImgUpload
+                    className="uploader_wrap"
+                    personal={personal}
+                    onFinish={afterUpload}
+                >
                     <div>
                         <SVGIcon width="32" style={{ fill: 'gray' }} type="plus_no_outline" />
                     </div>
-                    <span className="tips">图片最大不超过3m</span>
                 </ImgUpload>
                 <div className="switch_wrap">
-                    <button className={`switch_btn${personal ? '' : ' active'}`} onClick={() => setPersonal('')}>COMMON</button>
-                    <button className={`switch_btn${personal ? ' active' : ''}`} onClick={() => setPersonal('private/')}>PRIVATE</button>
+                    <button className={`switch_btn${personal ? '' : ' active'}`} onClick={() => setPersonal(false)}>COMMON</button>
+                    <button className={`switch_btn${personal ? ' active' : ''}`} onClick={() => setPersonal(true)}>PRIVATE</button>
                 </div>
                 <div className="list_wrap">
-                    {folders.map(fold => (
-                        <div key={fold.path} className="time_fold_wrap">
+                    {folders.map((fold, i) => (
+                        <div key={fold.path} className={`time_fold_wrap${page.current * size.current > i ? '' : ' hide'}`}>
                             <div className="timestone">{fold.name}</div>
                             <div className="pics_item_wrap">
                                 {pics[fold.path]?.map(pic => (
@@ -175,6 +208,15 @@ export default function ImgSource({ list }: Props) {
                         </div>
                     ))}
                 </div>
+                <div ref={footer}>
+                    {end ? (
+                        <div className="no_more_tips">真的一点都没有了。。。。。。</div>
+                    ) : (
+                        <SVGIcon className="load_more_sign rotate" width="48" type="loading" fill="gray" />
+                    )}
+                </div>
+
+
             </DIV>
         </main>
     </>)

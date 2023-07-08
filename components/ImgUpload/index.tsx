@@ -106,6 +106,7 @@ export default function ImgUpload({ clickable = true, children, personal = false
     const [files, setFiles] = useState<File[]>([])
     const [urls, setUrls] = useState<string[]>([])
     const [urlInput, setUrlInput] = useState('')
+    const [loading, setLoading] = useState(false)
     const win = useRef(typeof window !== "undefined" ? window?.URL || window?.webkitURL : undefined)
     const total = useMemo(() => {
         return [
@@ -148,6 +149,7 @@ export default function ImgUpload({ clickable = true, children, personal = false
     }
     const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
+        setLoading(true)
         const newMap = { ...uploadStatusMap };
         for (let i = 0; i < files.length; i++) {
             const name = 'pic' + Date.now() + String(Math.random()).slice(4, 7) + '.' + files[i].name.split('.').reverse()[0]
@@ -177,6 +179,7 @@ export default function ImgUpload({ clickable = true, children, personal = false
         onFinish();
         setUrls((urls) => urls.filter((_, i) => newMap[total[i + files.length].id] === 'ERROR'))
         setFiles((files) => files.filter((_, i) => newMap[total[i].id] === 'ERROR'))
+        setLoading(false)
     }
     const inputUrl = () => {
         setUrls(urls => Array.from(new Set([...urls, urlInput])))
@@ -227,7 +230,7 @@ export default function ImgUpload({ clickable = true, children, personal = false
                 {total.map((e, i) => (
                     <div key={e.id} className={`tmp_item_wrap upload_${uploadStatusMap[e.id]}`}>
                         <img className="tmp_item" width="40" height="96" src={e.src} alt="" />
-                        <SVGIcon className="tmp_del_btn" type="close" onClick={() => deleteTmpPic(e, i)} />
+                        {loading || <SVGIcon className="tmp_del_btn" type="close" onClick={() => deleteTmpPic(e, i)} />}
                         {{
                             SUCCESS: <SVGIcon className="tmp_status_btn" type="yes" fill="green" />,
                             ERROR: <SVGIcon className="tmp_status_btn" type="no" fill="red" />,

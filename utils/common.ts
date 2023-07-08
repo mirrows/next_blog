@@ -1,3 +1,5 @@
+import { useRef } from "react"
+
 export const deepClone = <T>(data: T): T => {
   return JSON.parse(JSON.stringify(data))
 }
@@ -39,4 +41,12 @@ export const Format = function (time: Date, fmt = "YYYY-MM-DD") {
   for (var k in o)
     if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
   return fmt;
+}
+
+export const useDebos = (cb: Function, timeout = 300) => {
+  let timer = useRef<NodeJS.Timeout | null>(null);
+  return (...props: any) => {
+    timer.current && clearTimeout(timer.current)
+    timer.current = setTimeout(cb.bind(this, ...props), timeout)
+  }
 }
