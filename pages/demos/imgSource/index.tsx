@@ -2,9 +2,8 @@ import ImgUpload from "@/components/ImgUpload"
 import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
 import { queryPicList } from "@/req/demos"
-import { useDebos } from "@/utils/common"
 import Head from "next/head"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 
 
@@ -119,7 +118,7 @@ export default function ImgSource({ list }: Props) {
     const [personal, setPersonal] = useState(false)
     const [pics, setPics] = useState<PicsMap>({})
     const page = useRef(0)
-    const size = useRef(2)
+    const size = useRef(1)
     const once = useRef(false)
     const [end, setEnd] = useState(false)
     const io = useRef<IntersectionObserver>()
@@ -151,9 +150,6 @@ export default function ImgSource({ list }: Props) {
         await queryFolder();
         queryPics(0);
     }
-    const dbs = useDebos(() => {
-        firstTime()
-    }, 500)
     useEffect(() => {
         if (once.current) return
         once.current = true
@@ -161,7 +157,7 @@ export default function ImgSource({ list }: Props) {
         firstTime().then(() => {
             io.current = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
                 if (entries[0].intersectionRatio <= 0) return;
-                dbs()
+                firstTime()
             }, {
                 rootMargin: '500px 0px'
             });
