@@ -11,6 +11,7 @@ export const uploadBase64 = (params: UploadMiniParams) => {
     path: '/demos/uploadBase64',
     method: 'put',
     headers: {
+      timestamp: Date.now(),
       'content-type': 'application/json',
       ...(stone.data.token ? { Authorization: `token ${stone.data.token}` } : {})
     },
@@ -28,6 +29,7 @@ export const uploadUrl = (params: UploadUrlParams) => {
     path: '/demos/uploadUrl',
     method: 'put',
     headers: {
+      timestamp: Date.now(),
       'content-type': 'application/json',
       ...(stone.data.token ? { Authorization: `token ${stone.data.token}` } : {})
     },
