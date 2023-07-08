@@ -79,7 +79,6 @@ export const useLazyImgs = (path?: string, cd?: Function) => {
     }
     const doms = domsRef.current || document.getElementsByTagName('img')
     const list = Array.from(doms).filter(dom => dom.classList.contains(realPath))
-    // console.log([...doms].map(dom => dom.getBoundingClientRect().top))
     const clientHeight = document.documentElement.clientHeight
     const clientWidth = document.documentElement.clientWidth
     const arr = [];
@@ -89,6 +88,7 @@ export const useLazyImgs = (path?: string, cd?: Function) => {
           || img.getBoundingClientRect().top > 1.5 * clientHeight)
         && !(img.getBoundingClientRect().left < -clientWidth
           || img.getBoundingClientRect().left > 1.5 * clientWidth)
+        && img.getBoundingClientRect().width && img.getBoundingClientRect().height
       ) {
         setTimeout(() => {
           if (img.dataset.src) {

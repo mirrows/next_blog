@@ -5,6 +5,7 @@ import { queryPicList } from "@/req/demos"
 import Head from "next/head"
 import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
+import Piclist from "./components/PicList"
 
 
 const DIV = styled.div`
@@ -113,61 +114,66 @@ type PicsMap = {
     [key in Folder['path']]: Pic[]
 }
 
+
 export default function ImgSource({ list }: Props) {
-    const [folders, setFolders] = useState(list)
     const [personal, setPersonal] = useState(false)
-    const [pics, setPics] = useState<PicsMap>({})
-    const page = useRef(0)
-    const size = useRef(1)
-    const once = useRef(false)
-    const [end, setEnd] = useState(false)
-    const io = useRef<IntersectionObserver>()
-    const footer = useRef<HTMLDivElement | null>(null)
-    const queryPics = async (num: number) => {
-        const path = folders[num]?.path
-        if (!path) return
-        const { data } = await queryPicList(path);
-        setPics(val => ({
-            ...val,
-            [path]: data
-        }))
-        return data
-    }
-    const queryFolder = async () => {
-        const { data } = await queryPicList('mini/');
-        setFolders(data)
-    }
-    const firstTime = async () => {
-        page.current += 1
-        for (let i = 0; i < size.current; i++) {
-            await queryPics(i + size.current * (page.current - 1));
-        }
-        if (folders.length <= page.current * size.current) {
-            setEnd(true)
-        }
-    }
+    // const [folders, setFolders] = useState(list)
+    // const [pics, setPics] = useState<PicsMap>({})
+    // const page = useRef(0)
+    // const size = useRef(1)
+    // const once = useRef(false)
+    // const [end, setEnd] = useState(false)
+    // const io = useRef<IntersectionObserver>()
+    // const footer = useRef<HTMLDivElement | null>(null)
+    // const queryPics = async (num: number) => {
+    //     const path = folders[num]?.path
+    //     if (!path) return
+    //     const { data } = await queryPicList(path);
+    //     setPics(val => ({
+    //         ...val,
+    //         [path]: data
+    //     }))
+    //     return data
+    // }
+    // const queryFolder = async () => {
+    //     const { data } = await queryPicList('mini/');
+    //     setFolders(data)
+    // }
+    // const firstTime = async () => {
+    //     page.current += 1
+    //     for (let i = 0; i < size.current; i++) {
+    //         await queryPics(i + size.current * (page.current - 1));
+    //     }
+    //     if (folders.length <= page.current * size.current) {
+    //         setEnd(true)
+    //     }
+    // }
     const afterUpload = async () => {
-        await queryFolder();
-        queryPics(0);
+        console.log('fffff')
+        // await queryFolder();
+        // queryPics(0);
     }
-    useEffect(() => {
-        if (once.current) return
-        once.current = true
-        queryFolder();
-        firstTime().then(() => {
-            io.current = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
-                if (entries[0].intersectionRatio <= 0) return;
-                firstTime()
-            }, {
-                rootMargin: '500px 0px'
-            });
-            footer.current && io.current?.observe(footer.current)
-        });
-        return () => {
-            footer.current && io.current?.unobserve(footer.current);
-            io.current?.disconnect();
-        }
-    }, [])
+    // useEffect(() => {
+
+    // }, [personal])
+    // useEffect(() => {
+    //     if (once.current) return
+    //     once.current = true
+    //     queryFolder();
+    //     firstTime().then(() => {
+    //         io.current = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+    //             if (entries[0].intersectionRatio <= 0) return;
+    //             firstTime()
+    //         }, {
+    //             rootMargin: '500px 0px'
+    //         });
+    //         footer.current && io.current?.observe(footer.current)
+    //     });
+    //     return () => {
+    //         footer.current && io.current?.unobserve(footer.current);
+    //         io.current?.disconnect();
+    //     }
+    // }, [])
     return (<>
         <Head>
             <title>延迟图床</title>
@@ -190,7 +196,9 @@ export default function ImgSource({ list }: Props) {
                     <button className={`switch_btn${personal ? '' : ' active'}`} onClick={() => setPersonal(false)}>COMMON</button>
                     <button className={`switch_btn${personal ? ' active' : ''}`} onClick={() => setPersonal(true)}>PRIVATE</button>
                 </div>
-                <div className="list_wrap">
+                <Piclist list={list} path="mini/" show={!personal} className={personal ? 'hide' : ''} />
+                <Piclist list={[]} path="personal/mini/" show={!!personal} className={personal ? '' : 'hide'} />
+                {/* <div className="list_wrap">
                     {folders.map((fold, i) => (
                         <div key={fold.path} className={`time_fold_wrap${page.current * size.current > i ? '' : ' hide'}`}>
                             <div className="timestone">{fold.name}</div>
@@ -210,7 +218,7 @@ export default function ImgSource({ list }: Props) {
                     ) : (
                         <SVGIcon className="load_more_sign rotate" width="48" type="loading" fill="gray" />
                     )}
-                </div>
+                </div> */}
 
 
             </DIV>
