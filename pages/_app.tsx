@@ -99,13 +99,13 @@ export default function App({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
       </Suspense> */}
       <Component {...pageProps} />
-      <Div>
+      {/* <Div>
         <div className={`ps_mask${loading ? '' : ' disappear'}`}>
           <div className="loading_wrap">
             <LazyImage width="120" height="167" src="/loading.gif" alt="loading img" />
           </div>
         </div>
-      </Div>
+      </Div> */}
     </>
   )
 }
