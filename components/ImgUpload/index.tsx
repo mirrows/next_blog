@@ -184,6 +184,7 @@ export default function ImgUpload({ clickable = true, children, onStartUpload, p
         onFinish();
         setUrls((urls) => urls.filter((_, i) => newMap[total[i + files.length].id] === 'ERROR'))
         setFiles((files) => files.filter((_, i) => newMap[total[i].id] === 'ERROR'))
+        inputRef.current && (inputRef.current.value = '')
         setLoading(false)
     }
     const inputUrl = () => {

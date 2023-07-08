@@ -1,8 +1,9 @@
 import ImgUpload from "@/components/ImgUpload"
 import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
-import { queryPicList } from "@/req/demos"
+import { deletePic, queryPicList } from "@/req/demos"
 import { RefType } from "@/types/demos"
+import { stone } from "@/utils/global"
 import Head from "next/head"
 import { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } from "react"
 import styled from "styled-components"
@@ -47,6 +48,19 @@ const DIV = styled.div`
             height: 180px;
         }
     }
+    .pic_item_wrap{
+      position: relative;
+    }
+    .img_del_btn{
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 24px;
+      padding: 5px 5px 12px 12px;
+      border-radius: 0 0 0 36px;
+      fill: #fff;
+      background-color: #000;
+    }
     .no_more_tips{
         font-size: 2rem;
         font-weight: 700;
@@ -72,6 +86,7 @@ type Pic = {
   download_url: string,
   cdn_url: string,
   sha: string,
+  path: string,
   name: string
 }
 
@@ -81,23 +96,31 @@ type PicsMap = {
 
 
 function UploadPicList({ list = [], path = 'mini/', show = true, ...props }: Props, ref: Ref<RefType>) {
+  const [isOwner, setOwner] = useState(false)
   const [folders, setFolders] = useState(list)
   const [pics, setPics] = useState<PicsMap>({})
   const page = useRef(0)
   const size = useRef(1)
   const once = useRef(false)
   const [end, setEnd] = useState(false)
+  const [curPath, setPath] = useState<number | string>('')
   const io = useRef<IntersectionObserver>()
   const footer = useRef<HTMLDivElement | null>(null)
-  const queryPics = async (num: number) => {
-    const path = folders[num]?.path
+  const queryPics = async (numOpath: number | string) => {
+    let path = ''
+    if (typeof numOpath === 'number') {
+      path = folders[numOpath as number]?.path
+    } else if (typeof numOpath === 'string') {
+      path = numOpath
+    }
     if (!path) return
-    const { data } = await queryPicList(path);
+    const res = await queryPicList(path).catch(() => { });
+    setPath('')
     setPics(val => ({
       ...val,
-      [path]: data
+      [path]: res?.data || []
     }))
-    return data
+    return res?.data || []
   }
   const queryFolder = async () => {
     const { data } = await queryPicList(path);
@@ -118,12 +141,23 @@ function UploadPicList({ list = [], path = 'mini/', show = true, ...props }: Pro
       setEnd(true)
     }
   }
+
+  const delPic = (path: string, item: Pic) => {
+    deletePic({ path: item.path, sha: item.sha }).then(res => {
+      queryPics(path)
+    })
+  }
   useImperativeHandle(ref, () => ({
     afterUpload: async () => {
       await queryFolder();
-      queryPics(0);
+      setPath(0);
+      // queryPics(0);
     },
   }))
+  useEffect(() => {
+    if (curPath === '') return
+    queryPics(curPath)
+  }, [curPath])
   useEffect(() => {
     if (show) {
       footer.current && io.current?.observe(footer.current)
@@ -145,6 +179,7 @@ function UploadPicList({ list = [], path = 'mini/', show = true, ...props }: Pro
   }, [show])
   useEffect(() => {
     queryFolder()
+    stone.isGithubOwner((isowner) => setOwner(isowner))
     return () => {
       footer.current && io.current?.unobserve(footer.current);
       io.current?.disconnect();
@@ -153,17 +188,19 @@ function UploadPicList({ list = [], path = 'mini/', show = true, ...props }: Pro
   return (<>
     <DIV {...props}>
       <div className="list_wrap">
-        {folders?.map((fold, i) => (
+        {folders?.map((fold, i) => (pics[fold.path]?.length ? (
           <div key={fold.path} className={`time_fold_wrap${page.current * size.current > i ? '' : ' hide'}`}>
             <div className="timestone">{fold.name}</div>
             <div className="pics_item_wrap">
               {pics[fold.path]?.map(pic => (
                 <div key={pic.name} className="pic_item_wrap">
+                  {isOwner && <SVGIcon className="img_del_btn" type="close" onClick={() => delPic(fold.path, pic)} />}
                   <LazyImage className="img_item" src={pic.cdn_url} width="130" height="320" />
                 </div>
               ))}
             </div>
           </div>
+        ) : ''
         ))}
       </div>
       <div ref={footer}>

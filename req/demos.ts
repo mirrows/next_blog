@@ -50,3 +50,21 @@ export const queryPicList = (path: string) => {
     }
   })
 }
+
+type DeletePicParams = {
+  sha: string,
+  path: string
+}
+
+export const deletePic = (params: DeletePicParams) => {
+  return query({
+    path: '/demos/deletePic',
+    method: 'post',
+    headers: {
+      timestamp: Date.now(),
+      'content-type': 'application/json',
+      ...(stone.data.token ? { Authorization: `token ${stone.data.token}` } : {})
+    },
+    params,
+  })
+}

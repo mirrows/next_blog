@@ -22,6 +22,8 @@ const DIV = styled.div`
         margin: auto;
         border: 2px dashed gray;
         border-radius: 6px;
+        background-image: url(https://empty.t-n.top/pub_lic/2023_07_08/pic1688805979076243.jpg);
+        box-shadow: 0 0 5px #999;
         cursor: pointer;
     }
     .tips{
@@ -82,7 +84,7 @@ export default function ImgSource({ list }: Props) {
     }
     useEffect(() => {
         stone.isGithubOwner((isowner) => setOwner(isowner))
-    })
+    }, [])
     return (<>
         <Head>
             <title>延迟图床</title>
