@@ -60,6 +60,7 @@ if (typeof window !== "undefined") {
     const data = JSON.parse(localStorage.tmpData)
     if (Date.now() - (data.lastTime || 0) > 3 * 24 * 60 * 60 * 1000) {
       data.token = ''
+      data.userInfo = {}
     }
     stone.set(data)
     // localStorage.removeItem('tmpData')
