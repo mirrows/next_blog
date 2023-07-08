@@ -211,6 +211,10 @@ export default function ImgUpload({ clickable = true, children, onStartUpload, p
         }
     }
     useEffect(() => {
+        if (files.length) return
+        inputRef.current && (inputRef.current.value = '')
+    }, [files])
+    useEffect(() => {
         setUploadStatusMap(obj => {
             const map: { [key: string]: UploadType['uploadStatus'] } = {}
             total.forEach(e => {
