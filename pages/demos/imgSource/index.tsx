@@ -2,6 +2,8 @@ import ImgUpload from "@/components/ImgUpload"
 import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
 import { queryPicList } from "@/req/demos"
+import { RefType } from "@/types/demos"
+import { stone } from "@/utils/global"
 import Head from "next/head"
 import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
@@ -47,51 +49,6 @@ const DIV = styled.div`
     .switch_btn:hover{
         box-shadow: none;
     }
-    .list_wrap{
-        max-width: 1200px;
-        padding: 0 10px 10px;
-        margin: auto;
-    }
-    .timestone{
-        width: fit-content;
-        padding: 10px 20px;
-        background-color: #000;
-        font-size: 1.2rem;
-        color: #fff;
-    }
-    .time_fold_wrap{
-        margin-bottom: 10px;
-    }
-    .pics_item_wrap{
-        display: grid;
-        justify-content: center;
-        grid-template-columns: repeat(auto-fill, 130px);
-        grid-template-rows: repeat(auto-fill, 320px);
-        gap: 10px;
-        min-width: 200px;
-        max-width: 1200px;
-        width: 100%;
-        margin: 10px 0;
-    }
-    @media (max-width: 769px) {
-        .pics_item_wrap{
-            grid-template-columns: repeat(auto-fill, 80px);
-            grid-template-rows: repeat(auto-fill, 180px);
-            gap: 5px;
-            margin: 5px 0;
-        }
-        .img_item{
-            width: 80px;
-            height: 180px;
-        }
-    }
-    .no_more_tips{
-        font-size: 2rem;
-        font-weight: 700;
-        font-family: youyuan;
-        letter-spacing: 0.1rem;
-        color: gray;
-    }
 `
 
 type Folder = {
@@ -103,77 +60,28 @@ type Props = {
     list: Folder[]
 }
 
-type Pic = {
-    download_url: string,
-    cdn_url: string,
-    sha: string,
-    name: string
-}
-
-type PicsMap = {
-    [key in Folder['path']]: Pic[]
-}
-
 
 export default function ImgSource({ list }: Props) {
     const [personal, setPersonal] = useState(false)
-    // const [folders, setFolders] = useState(list)
-    // const [pics, setPics] = useState<PicsMap>({})
-    // const page = useRef(0)
-    // const size = useRef(1)
-    // const once = useRef(false)
-    // const [end, setEnd] = useState(false)
-    // const io = useRef<IntersectionObserver>()
-    // const footer = useRef<HTMLDivElement | null>(null)
-    // const queryPics = async (num: number) => {
-    //     const path = folders[num]?.path
-    //     if (!path) return
-    //     const { data } = await queryPicList(path);
-    //     setPics(val => ({
-    //         ...val,
-    //         [path]: data
-    //     }))
-    //     return data
-    // }
-    // const queryFolder = async () => {
-    //     const { data } = await queryPicList('mini/');
-    //     setFolders(data)
-    // }
-    // const firstTime = async () => {
-    //     page.current += 1
-    //     for (let i = 0; i < size.current; i++) {
-    //         await queryPics(i + size.current * (page.current - 1));
-    //     }
-    //     if (folders.length <= page.current * size.current) {
-    //         setEnd(true)
-    //     }
-    // }
+    const [isOwner, setOwner] = useState(false)
+    const commonRef = useRef<any>(null)
+    const privateRef = useRef<any>(null)
+    const curPersonal = useRef(false)
     const afterUpload = async () => {
-        console.log('fffff')
         // await queryFolder();
         // queryPics(0);
+        if (curPersonal.current) {
+            privateRef.current?.afterUpload()
+        } else {
+            commonRef.current?.afterUpload()
+        }
     }
-    // useEffect(() => {
-
-    // }, [personal])
-    // useEffect(() => {
-    //     if (once.current) return
-    //     once.current = true
-    //     queryFolder();
-    //     firstTime().then(() => {
-    //         io.current = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
-    //             if (entries[0].intersectionRatio <= 0) return;
-    //             firstTime()
-    //         }, {
-    //             rootMargin: '500px 0px'
-    //         });
-    //         footer.current && io.current?.observe(footer.current)
-    //     });
-    //     return () => {
-    //         footer.current && io.current?.unobserve(footer.current);
-    //         io.current?.disconnect();
-    //     }
-    // }, [])
+    const onStartUpload = () => {
+        curPersonal.current = personal
+    }
+    useEffect(() => {
+        stone.isGithubOwner((isowner) => setOwner(isowner))
+    })
     return (<>
         <Head>
             <title>延迟图床</title>
@@ -187,40 +95,18 @@ export default function ImgSource({ list }: Props) {
                     className="uploader_wrap"
                     personal={personal}
                     onFinish={afterUpload}
+                    onStartUpload={onStartUpload}
                 >
                     <div>
                         <SVGIcon width="32" style={{ fill: 'gray' }} type="plus_no_outline" />
                     </div>
                 </ImgUpload>
-                <div className="switch_wrap">
+                {isOwner && <div className="switch_wrap">
                     <button className={`switch_btn${personal ? '' : ' active'}`} onClick={() => setPersonal(false)}>COMMON</button>
                     <button className={`switch_btn${personal ? ' active' : ''}`} onClick={() => setPersonal(true)}>PRIVATE</button>
-                </div>
-                <Piclist list={list} path="mini/" show={!personal} className={personal ? 'hide' : ''} />
-                <Piclist list={[]} path="personal/mini/" show={!!personal} className={personal ? '' : 'hide'} />
-                {/* <div className="list_wrap">
-                    {folders.map((fold, i) => (
-                        <div key={fold.path} className={`time_fold_wrap${page.current * size.current > i ? '' : ' hide'}`}>
-                            <div className="timestone">{fold.name}</div>
-                            <div className="pics_item_wrap">
-                                {pics[fold.path]?.map(pic => (
-                                    <div key={pic.name} className="pic_item_wrap">
-                                        <LazyImage className="img_item" src={pic.cdn_url} width="130" height="320" />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div ref={footer}>
-                    {end ? (
-                        <div className="no_more_tips">真的一点都没有了。。。。。。</div>
-                    ) : (
-                        <SVGIcon className="load_more_sign rotate" width="48" type="loading" fill="gray" />
-                    )}
-                </div> */}
-
-
+                </div>}
+                <Piclist ref={commonRef} list={list} path="mini/" show={!personal} className={personal ? 'hide' : ''} />
+                {isOwner && <Piclist ref={privateRef} list={[]} path="personal/mini/" show={!!personal} className={personal ? '' : 'hide'} />}
             </DIV>
         </main>
     </>)

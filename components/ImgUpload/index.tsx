@@ -9,6 +9,8 @@ type Props = {
     clickable?: boolean,
     children: JSX.Element | JSX.Element[],
     personal?: boolean,
+    onStartUpload: () => void,
+    onFinish: () => void,
     [key: string]: any,
 }
 
@@ -100,13 +102,14 @@ const DIV = styled.div`
     }
 `
 
-export default function ImgUpload({ clickable = true, children, personal = false, onFinish = () => { }, ...props }: Props) {
+export default function ImgUpload({ clickable = true, children, onStartUpload, personal = false, onFinish = () => { }, ...props }: Props) {
     const wrapRef = useRef<HTMLDivElement | null>(null)
     const inputRef = useRef<HTMLInputElement | null>(null)
     const [files, setFiles] = useState<File[]>([])
     const [urls, setUrls] = useState<string[]>([])
     const [urlInput, setUrlInput] = useState('')
     const [loading, setLoading] = useState(false)
+    const tmpPersonal = useRef(personal)
     const win = useRef(typeof window !== "undefined" ? window?.URL || window?.webkitURL : undefined)
     const total = useMemo(() => {
         return [
@@ -150,6 +153,8 @@ export default function ImgUpload({ clickable = true, children, personal = false
     const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         setLoading(true)
+        onStartUpload()
+        tmpPersonal.current = personal
         const newMap = { ...uploadStatusMap };
         for (let i = 0; i < files.length; i++) {
             const name = 'pic' + Date.now() + String(Math.random()).slice(4, 7) + '.' + files[i].name.split('.').reverse()[0]
@@ -168,8 +173,8 @@ export default function ImgUpload({ clickable = true, children, personal = false
         for (let i = 0; i < urls.length; i++) {
             let status: UploadType['uploadStatus'] = 'LOADING';
             newMap[total[i + files.length].id] = status
-            const mini = await uploadUrl({ url: urls[i], path: `${personal ? 'personal/' : ''}mini/${Format(new Date(), 'YYYY_MM_DD')}` })
-            const normal = await uploadUrl({ url: urls[i], path: `${personal ? 'personal/' : ''}normal/${Format(new Date(), 'YYYY_MM_DD')}` })
+            const mini = await uploadUrl({ url: urls[i], path: `${tmpPersonal.current ? 'personal/' : ''}mini/${Format(new Date(), 'YYYY_MM_DD')}` })
+            const normal = await uploadUrl({ url: urls[i], path: `${tmpPersonal.current ? 'personal/' : ''}normal/${Format(new Date(), 'YYYY_MM_DD')}` })
             if (normal.code || mini.code) {
                 status = 'ERROR'
             }

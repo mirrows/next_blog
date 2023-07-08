@@ -2,8 +2,9 @@ import ImgUpload from "@/components/ImgUpload"
 import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
 import { queryPicList } from "@/req/demos"
+import { RefType } from "@/types/demos"
 import Head from "next/head"
-import { useEffect, useRef, useState } from "react"
+import { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } from "react"
 import styled from "styled-components"
 
 
@@ -11,7 +12,7 @@ const DIV = styled.div`
     .list_wrap{
         max-width: 1200px;
         padding: 0 10px 10px;
-        margin: auto;
+        margin: 10px auto;
     }
     .timestone{
         width: fit-content;
@@ -79,7 +80,7 @@ type PicsMap = {
 }
 
 
-export default function Piclist({ list, path = 'mini/', show = true, ...props }: Props) {
+const Piclist = forwardRef(({ list, path = 'mini/', show = true, ...props }: Props, ref: Ref<any>) => {
   const [folders, setFolders] = useState(list)
   const [pics, setPics] = useState<PicsMap>({})
   const page = useRef(0)
@@ -117,6 +118,12 @@ export default function Piclist({ list, path = 'mini/', show = true, ...props }:
       setEnd(true)
     }
   }
+  useImperativeHandle(ref, () => ({
+    afterUpload: async () => {
+      await queryFolder();
+      queryPics(0);
+    },
+  }))
   useEffect(() => {
     if (show) {
       footer.current && io.current?.observe(footer.current)
@@ -169,3 +176,6 @@ export default function Piclist({ list, path = 'mini/', show = true, ...props }:
     </DIV>
   </>)
 }
+)
+
+export default Piclist
