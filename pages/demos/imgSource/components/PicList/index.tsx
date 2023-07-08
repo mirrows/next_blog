@@ -80,7 +80,7 @@ type PicsMap = {
 }
 
 
-const Piclist = forwardRef(({ list, path = 'mini/', show = true, ...props }: Props, ref: Ref<any>) => {
+function UploadPicList({ list = [], path = 'mini/', show = true, ...props }: Props, ref: Ref<RefType>) {
   const [folders, setFolders] = useState(list)
   const [pics, setPics] = useState<PicsMap>({})
   const page = useRef(0)
@@ -153,7 +153,7 @@ const Piclist = forwardRef(({ list, path = 'mini/', show = true, ...props }: Pro
   return (<>
     <DIV {...props}>
       <div className="list_wrap">
-        {folders.map((fold, i) => (
+        {folders?.map((fold, i) => (
           <div key={fold.path} className={`time_fold_wrap${page.current * size.current > i ? '' : ' hide'}`}>
             <div className="timestone">{fold.name}</div>
             <div className="pics_item_wrap">
@@ -176,6 +176,6 @@ const Piclist = forwardRef(({ list, path = 'mini/', show = true, ...props }: Pro
     </DIV>
   </>)
 }
-)
 
-export default Piclist
+
+export default forwardRef(UploadPicList)

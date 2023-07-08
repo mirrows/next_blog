@@ -1,5 +1,4 @@
 import ImgUpload from "@/components/ImgUpload"
-import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
 import { queryPicList } from "@/req/demos"
 import { RefType } from "@/types/demos"
@@ -7,7 +6,7 @@ import { stone } from "@/utils/global"
 import Head from "next/head"
 import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
-import Piclist from "./components/PicList"
+import UploadPicList from "./components/PicList"
 
 
 const DIV = styled.div`
@@ -64,8 +63,8 @@ type Props = {
 export default function ImgSource({ list }: Props) {
     const [personal, setPersonal] = useState(false)
     const [isOwner, setOwner] = useState(false)
-    const commonRef = useRef<any>(null)
-    const privateRef = useRef<any>(null)
+    const commonRef = useRef<RefType>(null)
+    const privateRef = useRef<RefType>(null)
     const curPersonal = useRef(false)
     const afterUpload = async () => {
         // await queryFolder();
@@ -105,8 +104,8 @@ export default function ImgSource({ list }: Props) {
                     <button className={`switch_btn${personal ? '' : ' active'}`} onClick={() => setPersonal(false)}>COMMON</button>
                     <button className={`switch_btn${personal ? ' active' : ''}`} onClick={() => setPersonal(true)}>PRIVATE</button>
                 </div>}
-                <Piclist ref={commonRef} list={list} path="mini/" show={!personal} className={personal ? 'hide' : ''} />
-                {isOwner && <Piclist ref={privateRef} list={[]} path="personal/mini/" show={!!personal} className={personal ? '' : 'hide'} />}
+                <UploadPicList ref={commonRef} list={list} path="mini/" show={!personal} className={personal ? 'hide' : ''} />
+                {isOwner && <UploadPicList ref={privateRef} list={[]} path="personal/mini/" show={!!personal} className={personal ? '' : 'hide'} />}
             </DIV>
         </main>
     </>)
