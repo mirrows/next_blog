@@ -31,7 +31,7 @@ export const stone = {
   },
   set(newData: Partial<typeof gbData>) {
     this.data = { ...this.data, ...newData };
-    localStorage.setItem('tmpData', JSON.stringify(stone.data))
+    // localStorage.setItem('tmpData', JSON.stringify(stone.data))
   },
   on<T extends keyof EventEmits>(name: T, cb: EventEmits[T]) {
     this.events[`event_${name}`] || (this.events[`event_${name}`] = [])

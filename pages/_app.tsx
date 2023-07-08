@@ -71,16 +71,16 @@ export default function App({ Component, pageProps }: AppProps) {
       statistics()
       stayTime.current = stayTime.current + 1
     }
-    // const timer = setInterval(() => {
-    //   stayTime.current = stayTime.current + 1
-    //   stone.set({ stayTime: stayTime.current })
-    // }, 1000)
+    const timer = setInterval(() => {
+      stayTime.current = stayTime.current + 1
+      stone.set({ stayTime: stayTime.current })
+    }, 1000)
     router.events.on('routeChangeStart', loadingStart)
     router.events.on('routeChangeComplete', loadingEnd)
     window.addEventListener('beforeunload', visitorStatistic)
     stone.set({ emit })
     return () => {
-      // clearInterval(timer)
+      clearInterval(timer)
       window.removeEventListener('beforeunload', visitorStatistic)
     }
   }, [])
