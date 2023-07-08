@@ -1,7 +1,7 @@
 import ImgUpload from "@/components/ImgUpload"
 import SVGIcon from "@/components/SVGIcon"
 import { queryPicList } from "@/req/demos"
-import { RefType } from "@/types/demos"
+import { Pic, RefType } from "@/types/demos"
 import { stone } from "@/utils/global"
 import Head from "next/head"
 import { useEffect, useRef, useState } from "react"
@@ -82,6 +82,9 @@ export default function ImgSource({ list }: Props) {
     const onStartUpload = () => {
         curPersonal.current = personal
     }
+    const openSwiper = (items: Pic[], ind: number) => {
+        console.log(items, ind)
+    }
     useEffect(() => {
         stone.isGithubOwner((isowner) => setOwner(isowner))
     }, [])
@@ -108,8 +111,8 @@ export default function ImgSource({ list }: Props) {
                     <button className={`switch_btn${personal ? '' : ' active'}`} onClick={() => setPersonal(false)}>COMMON</button>
                     <button className={`switch_btn${personal ? ' active' : ''}`} onClick={() => setPersonal(true)}>PRIVATE</button>
                 </div>}
-                <UploadPicList ref={commonRef} list={list} path="mini/" show={!personal} className={personal ? 'hide' : ''} />
-                {isOwner && <UploadPicList ref={privateRef} list={[]} path="personal/mini/" show={!!personal} className={personal ? '' : 'hide'} />}
+                <UploadPicList ref={commonRef} list={list} path="mini/" show={!personal} className={personal ? 'hide' : ''} onPreview={openSwiper} />
+                {isOwner && <UploadPicList ref={privateRef} list={[]} path="personal/mini/" show={!!personal} className={personal ? '' : 'hide'} onPreview={openSwiper} />}
             </DIV>
         </main>
     </>)

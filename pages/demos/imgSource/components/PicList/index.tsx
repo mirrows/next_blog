@@ -2,7 +2,7 @@ import ImgUpload from "@/components/ImgUpload"
 import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
 import { deletePic, queryPicList } from "@/req/demos"
-import { RefType } from "@/types/demos"
+import { Pic, RefType } from "@/types/demos"
 import { stone } from "@/utils/global"
 import Head from "next/head"
 import { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } from "react"
@@ -79,23 +79,18 @@ type Props = {
   list: Folder[],
   path?: string,
   show?: boolean | string,
+  onPreview?: (items: Pic[], ind: number) => void,
   [key: string]: any,
 }
 
-type Pic = {
-  download_url: string,
-  cdn_url: string,
-  sha: string,
-  path: string,
-  name: string
-}
+
 
 type PicsMap = {
   [key in Folder['path']]: Pic[]
 }
 
 
-function UploadPicList({ list = [], path = 'mini/', show = true, ...props }: Props, ref: Ref<RefType>) {
+function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...props }: Props, ref: Ref<RefType>) {
   const [isOwner, setOwner] = useState(false)
   const [folders, setFolders] = useState(list)
   const [pics, setPics] = useState<PicsMap>({})
@@ -154,6 +149,9 @@ function UploadPicList({ list = [], path = 'mini/', show = true, ...props }: Pro
       // queryPics(0);
     },
   }))
+  const previewPic = (items: Pic[], ind: number) => {
+    onPreview?.(items, ind)
+  }
   useEffect(() => {
     if (curPath === '') return
     queryPics(curPath)
@@ -192,10 +190,10 @@ function UploadPicList({ list = [], path = 'mini/', show = true, ...props }: Pro
           <div key={fold.path} className={`time_fold_wrap${page.current * size.current > i ? '' : ' hide'}`}>
             <div className="timestone">{fold.name}</div>
             <div className="pics_item_wrap">
-              {pics[fold.path]?.map(pic => (
+              {pics[fold.path]?.map((pic, i) => (
                 <div key={pic.name} className="pic_item_wrap">
                   {isOwner && <SVGIcon className="img_del_btn" type="close" onClick={() => delPic(fold.path, pic)} />}
-                  <LazyImage className="img_item" src={pic.cdn_url} width="130" height="320" />
+                  <LazyImage className="img_item" src={pic.cdn_url} width="130" height="320" onClick={() => previewPic(pics[fold.path], i)} />
                 </div>
               ))}
             </div>
