@@ -174,6 +174,7 @@ export default function ImgSource({ list }: Props) {
                 curScrollTop.current = { obj: 'documentElement', val: document.documentElement.scrollTop }
             }
             document.body.classList.add('disabled_scroll')
+            emit()
             setTimeout(() => {
                 emit()
             }, 500)
