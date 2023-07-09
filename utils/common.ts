@@ -50,3 +50,7 @@ export const useDebos = (cb: Function, timeout = 300) => {
     timer.current = setTimeout(cb.bind(this, ...props), timeout)
   }
 }
+
+export const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|IOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+}
