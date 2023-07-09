@@ -51,12 +51,16 @@ function LazyImage({ loadingPic, src, className, ...props }: TProps) {
             // && imgRef.current.getBoundingClientRect().width
             // && imgRef.current.getBoundingClientRect().height
         ) {
-            setSrc(src)
+            const img = new Image()
+            img.src = src
+            img.onload = () => {
+                setSrc(src)
+            }
             imgRef.current?.classList.remove('lazy')
         }
     }, [src])
     return (<>
-        <MImage
+        <img
             className={`${className ? `lazy ${className}` : 'lazy'}`}
             ref={imgRef}
             src={imgSrc}
