@@ -107,6 +107,11 @@ const DIV = styled.div`
         width: 100%;
         height: 100%;
     }
+    .tmp_status_btn{
+        position: absolute;
+        width: 64px;
+        z-index: -1;
+    }
 `
 
 type Folder = {
@@ -217,7 +222,9 @@ export default function ImgSource({ list }: Props) {
                         onSlideChangeTransitionEnd={slideChange}
                     >
                         {pics.map((pic, ind) => (<SwiperSlide key={ind} className="pic_wrap">
-                            <LazyImage loadingPic={pic.cdn_url} src={pic?.normal_url || pic.cdn_url} className={"pic_item"} width="1920" height="1080" alt="bing" />
+                            <LazyImage loadingPic={pic.cdn_url} src={pic?.normal_url || pic.cdn_url} className={"pic_item"} width="1920" height="1080" alt="bing">
+                                <SVGIcon className="tmp_status_btn rotate" type="loading" fill="#fff" />
+                            </LazyImage>
                         </SwiperSlide>))}
                     </MySwiper>
                 </div>

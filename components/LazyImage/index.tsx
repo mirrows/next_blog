@@ -1,15 +1,16 @@
 import RImage from "next/image"
-import { useEffect, useRef, useState } from "react"
+import { ReactElement, useEffect, useRef, useState } from "react"
 
 
 type TProps = {
     src: string,
     loadingPic?: string,
     className?: string,
+    children?: Element | ReactElement<any, any>,
     [key: string]: any
 }
 
-function LazyImage({ loadingPic, src, className, ...props }: TProps) {
+function LazyImage({ loadingPic, src, className, children, ...props }: TProps) {
     const loadingGif = useRef(loadingPic || process.env.NEXT_PUBLIC_LOADING_GIF || 'https://empty.t-n.top/pub_lic/2023_06_09/pic1686281264582557.gif')
     const failImg = useRef('https://empty.t-n.top/pub_lic/2023_06_26/pic1687748007844003.png')
     const [imgSrc, setSrc] = useState(loadingGif.current)
@@ -44,6 +45,7 @@ function LazyImage({ loadingPic, src, className, ...props }: TProps) {
             onError={handleError}
             {...props}
         />
+        {children}
     </>
 
         // <Image
