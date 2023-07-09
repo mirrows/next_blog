@@ -69,7 +69,7 @@ export const fileCompressor = (file: File, options: any): Promise<File | Blob> =
 
 
 
-export const useLazyImgs = (path?: string, cd?: Function) => {
+export const useLazyImgs = (path?: string, parent?: string, cd?: Function) => {
   const domsRef = useRef<NodeListOf<any>>()
   const imgListener = useCallback((path = 'lazy') => {
     let realPath = 'lazy';
@@ -77,7 +77,7 @@ export const useLazyImgs = (path?: string, cd?: Function) => {
       // 有可能是wheel事件对象
       realPath = path
     }
-    const doms = domsRef.current || document.getElementsByTagName('img')
+    const doms = domsRef.current?.length ? domsRef.current : document.getElementsByTagName('img')
     const list = Array.from(doms).filter(dom => dom.classList.contains(realPath))
     const clientHeight = document.documentElement.clientHeight
     const clientWidth = document.documentElement.clientWidth

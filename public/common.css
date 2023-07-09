@@ -190,7 +190,13 @@ img{
 }
 
 .hide{
-  display: none;
+  display: none !important;
+}
+
+.disabled_scroll{
+  max-height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 

@@ -7,6 +7,11 @@ import Head from "next/head"
 import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 import UploadPicList from "./components/PicList"
+import { Swiper as MySwiper, SwiperSlide } from 'swiper/react';
+import Swiper from "swiper"
+import LazyImage from "@/components/LazyImage"
+import 'swiper/css';
+import { useLazyImgs } from "@/utils/imgTool"
 
 
 const DIV = styled.div`
@@ -52,6 +57,56 @@ const DIV = styled.div`
     .switch_btn:hover{
         box-shadow: none;
     }
+
+    .imgs_wrap{
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #666;
+        z-index: 60;
+    }
+    .pic_wrap{
+        /* position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: fit-content; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+        margin: auto;
+        box-sizing: border-box;
+    }
+    .pic_item{
+        width: unset;
+        height: unset;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .swiper_header{
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px;
+        background-image: linear-gradient(black 0%, black 30%, transparent 100%);
+        box-sizing: border-box;
+        color: #fff;
+        z-index: 80;
+    }
+    .modal_wrap{
+
+    }
+    .img_swiper_wrap{
+        width: 100%;
+        height: 100%;
+    }
 `
 
 type Folder = {
@@ -70,6 +125,12 @@ export default function ImgSource({ list }: Props) {
     const commonRef = useRef<RefType>(null)
     const privateRef = useRef<RefType>(null)
     const curPersonal = useRef(false)
+    const swiperRef = useRef<Swiper | null>(null);
+    const [pics, setPics] = useState<Pic[]>([])
+    const [swiperOpen, setOpenSwiper] = useState<boolean>(false)
+    const [ind, setInd] = useState(0)
+    const { emit } = useLazyImgs('.img_swiper_wrap .lazy');
+    const curScrollTop = useRef<{ val: number, obj: 'body' | 'documentElement' }>({ obj: 'body', val: 0 })
     const afterUpload = async () => {
         // await queryFolder();
         // queryPics(0);
@@ -83,11 +144,36 @@ export default function ImgSource({ list }: Props) {
         curPersonal.current = personal
     }
     const openSwiper = (items: Pic[], ind: number) => {
-        console.log(items, ind)
+        setPics(items)
+        setInd(ind)
+        setTimeout(() => {
+            setOpenSwiper(true)
+            swiperRef.current?.slideTo(ind)
+            emit()
+        }, 0)
+    }
+    const slideChange = (swiper: Swiper) => {
+        setInd(swiper.realIndex)
+        emit()
     }
     useEffect(() => {
         stone.isGithubOwner((isowner) => setOwner(isowner))
     }, [])
+    useEffect(() => {
+        if (swiperOpen) {
+            if (document.body.scrollTop) {
+                curScrollTop.current = { obj: 'body', val: document.body.scrollTop }
+            } else if (document.documentElement.scrollTop) {
+                curScrollTop.current = { obj: 'documentElement', val: document.documentElement.scrollTop }
+            }
+            document.body.classList.add('disabled_scroll')
+        } else {
+            document.body.classList.remove('disabled_scroll')
+            if (!curScrollTop.current.val) return
+            document[curScrollTop.current.obj].scrollTop = curScrollTop.current.val
+            curScrollTop.current.val = 0
+        }
+    }, [swiperOpen])
     return (<>
         <Head>
             <title>延迟图床</title>
@@ -113,7 +199,30 @@ export default function ImgSource({ list }: Props) {
                 </div>}
                 <UploadPicList ref={commonRef} list={list} path="mini/" show={!personal} className={personal ? 'hide' : ''} onPreview={openSwiper} />
                 {isOwner && <UploadPicList ref={privateRef} list={[]} path="personal/mini/" show={!!personal} className={personal ? '' : 'hide'} onPreview={openSwiper} />}
+
+                <div
+                    className={`imgs_wrap${swiperOpen ? '' : ' hide'}`}
+                    onScroll={(e) => { e.stopPropagation() }}
+                    onWheel={(e) => { e.stopPropagation() }}
+                >
+                    <div className="swiper_header">
+                        <div>{pics[ind]?.name || ''}</div>
+                        <SVGIcon type="close" width="30" fill="#fff" className="close_swiper" onClick={() => setOpenSwiper(false)} />
+                    </div>
+                    <MySwiper
+                        loop={true}
+                        // autoplay={{ delay: 2000, disableOnInteraction: false }}
+                        className={`img_swiper_wrap`}
+                        onSwiper={swiper => swiperRef.current = swiper}
+                        onSlideChangeTransitionEnd={slideChange}
+                    >
+                        {pics.map((pic, ind) => (<SwiperSlide key={ind} className="pic_wrap">
+                            <LazyImage loadingPic={pic.cdn_url} src={pic?.normal_url || pic.cdn_url} className={"pic_item"} width="1920" height="1080" alt="bing" />
+                        </SwiperSlide>))}
+                    </MySwiper>
+                </div>
             </DIV>
+
         </main>
     </>)
 }
