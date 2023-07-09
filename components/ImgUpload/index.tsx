@@ -70,6 +70,7 @@ const DIV = styled.div`
     }
     .tmp_wrap{
         display: flex;
+        flex-wrap: wrap;
         max-height: 215px;
     }
     .tmp_item_wrap{

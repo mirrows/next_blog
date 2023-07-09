@@ -107,7 +107,7 @@ const DIV = styled.div`
         width: 100%;
         height: 100%;
     }
-    .tmp_status_btn{
+    .img_swiper_wrap .tmp_status_btn{
         position: absolute;
         width: 64px;
         z-index: -1;
