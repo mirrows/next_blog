@@ -18,6 +18,7 @@ function LazyImage({ loadingPic, src, className, children, ...props }: TProps) {
     const imgRef = useRef<HTMLImageElement | null>(null)
     const handleError = () => {
         setSrc(failImg.current)
+        setLoaded(true)
     }
     useEffect(() => {
         const clientHeight = document.documentElement.clientHeight
