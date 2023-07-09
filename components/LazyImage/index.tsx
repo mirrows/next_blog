@@ -31,8 +31,8 @@ function LazyImage({ loadingPic, src, className, children, ...props }: TProps) {
                 || imgRef.current.getBoundingClientRect().top > 1.5 * clientHeight)
             && !(imgRef.current.getBoundingClientRect().left < -clientWidth
                 || imgRef.current.getBoundingClientRect().left > 1.5 * clientWidth)
-            // && imgRef.current.getBoundingClientRect().width
-            // && imgRef.current.getBoundingClientRect().height
+            && imgRef.current.getBoundingClientRect().width
+            && imgRef.current.getBoundingClientRect().height
         ) {
             setSrc(src)
             imgRef.current?.classList.remove('lazy')

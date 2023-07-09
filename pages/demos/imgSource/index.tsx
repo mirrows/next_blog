@@ -156,7 +156,6 @@ export default function ImgSource({ list }: Props) {
         setTimeout(() => {
             setOpenSwiper(true)
             swiperRef.current?.slideTo(ind)
-            emit()
         }, 0)
     }
     const slideChange = (swiper: Swiper) => {
@@ -175,6 +174,9 @@ export default function ImgSource({ list }: Props) {
                 curScrollTop.current = { obj: 'documentElement', val: document.documentElement.scrollTop }
             }
             document.body.classList.add('disabled_scroll')
+            setTimeout(() => {
+                emit()
+            }, 500)
         } else {
             document.body.classList.remove('disabled_scroll')
             if (!curScrollTop.current.val) return
