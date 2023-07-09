@@ -188,7 +188,7 @@ const Div = styled.div`
     margin-right: 10px;
   }
   .artical_content{
-    flex: 1;
+    flex: 1 1 100%;
     display: flex;
     flex-direction: column;
     .artical_title{

@@ -1,27 +1,6 @@
 import RImage from "next/image"
 import { useEffect, useRef, useState } from "react"
-import styled from "styled-components"
 
-const MImage = styled(RImage)`
-    min-width: 60px;
-    min-height: 60px;
-    &:after{
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 0;
-        width: 0;
-        border: 50px solid #fff;
-        border-top-width: 0;
-        border-radius: 20px;
-        margin: auto;
-        background-color: #fff;
-        animation: rotate 1.2s linear infinite;
-    }
-`
 
 type TProps = {
     src: string,
@@ -51,11 +30,7 @@ function LazyImage({ loadingPic, src, className, ...props }: TProps) {
             // && imgRef.current.getBoundingClientRect().width
             // && imgRef.current.getBoundingClientRect().height
         ) {
-            const img = new Image()
-            img.src = src
-            img.onload = () => {
-                setSrc(src)
-            }
+            setSrc(src)
             imgRef.current?.classList.remove('lazy')
         }
     }, [src])
