@@ -161,7 +161,6 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
   useEffect(() => {
     if(once.current) return
     firstTime().then(() => {
-      console.log('before errrr')
       io.current = new IntersectionObserver(async (entries: IntersectionObserverEntry[]) => {
         if (entries[0].intersectionRatio <= 0) return;
         footer.current && io.current?.unobserve(footer.current);
@@ -183,7 +182,6 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
     }
     const picFooter = footer.current
     return () => {
-      console.log('errrr')
       picFooter && io.current?.unobserve(picFooter);
       io.current?.disconnect();
     }
