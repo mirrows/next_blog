@@ -336,7 +336,10 @@ export default function Home({ artical }: Props) {
             onSlideChangeTransitionEnd={slideChange}
           >
             {pics.map((pic, ind) => (<SwiperSlide key={ind} className="pic_wrap">
-              <LazyImage src={pic?.url || env.loadingGif || ''} className={"pic_item"} width="1920" height="1080" alt="bing" />
+              {
+                ind ? <img src={pic?.url || env.loadingGif || ''} className={"pic_item"} width="1920" height="1080" alt="bing" />
+                : <LazyImage src={pic?.url || env.loadingGif || ''} className={"pic_item"} width="1920" height="1080" alt="bing" />
+              }
             </SwiperSlide>))}
           </MySwiper>
           <div className='main_content'>
