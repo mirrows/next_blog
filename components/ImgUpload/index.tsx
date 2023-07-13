@@ -1,7 +1,7 @@
 import { uploadBase64, uploadUrl } from "@/req/demos"
 import { Format } from "@/utils/common"
 import { file2Base64, fileCompressor } from "@/utils/imgTool"
-import { ChangeEvent, FormEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useRef, useState } from "react"
+import { ChangeEvent, DragEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useRef, useState } from "react"
 import styled from "styled-components"
 import SVGIcon from "../SVGIcon"
 
@@ -117,7 +117,7 @@ export default function ImgUpload({ clickable = true, children, onStartUpload, p
             ...files.map(e => {
                 const src = win.current?.createObjectURL(e) || ''
                 return {
-                    id: src.slice(30, 50),
+                    id: btoa(encodeURI(e.name + e.type + e.size)),
                     type: 'file',
                     src,
                 }
@@ -134,16 +134,13 @@ export default function ImgUpload({ clickable = true, children, onStartUpload, p
         inputRef.current?.click();
     }
     const handlefile = (e: ChangeEvent<HTMLInputElement>) => {
-        const oldVal = [...total]
-        setTimeout(() => {
-            oldVal.forEach(p => {
-                if (p.type === 'file') {
-                    win.current?.revokeObjectURL(p.src)
-                }
-            })
-        })
         // win.current?
         e.target.files?.length && setFiles([...Array.from(e.target.files)])
+    }
+    const dropFile = (e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.files?.length && setFiles((pics) => [...pics, ...Array.from(e.dataTransfer.files)])
     }
     const uploadFile = async (file: File, options: any, path: string) => {
         const blob = file.type.match('gif') && !path.match('mini') ? file : await fileCompressor(file, options)
@@ -212,6 +209,17 @@ export default function ImgUpload({ clickable = true, children, onStartUpload, p
         }
     }
     useEffect(() => {
+        // 释放缓存
+        const url = win.current
+        return () => {
+            total.forEach(p => {
+                if (p.type === 'file' && p.src) {
+                    url?.revokeObjectURL(p.src)
+                }
+            })
+        }
+    }, [total])
+    useEffect(() => {
         if (files.length) return
         inputRef.current && (inputRef.current.value = '')
     }, [files])
@@ -225,7 +233,7 @@ export default function ImgUpload({ clickable = true, children, onStartUpload, p
         })
     }, [total])
     return (
-        <DIV ref={wrapRef} {...props} onClick={clickHandle}>
+        <DIV ref={wrapRef} {...props} onClick={clickHandle} onDrop={dropFile} onDragOver={(e) => e.preventDefault()}>
             {!!total.length || children}
             <input
                 ref={inputRef}
