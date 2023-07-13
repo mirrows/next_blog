@@ -5,7 +5,7 @@ import { deletePic, queryPicList } from "@/req/demos"
 import { Pic, RefType } from "@/types/demos"
 import { stone } from "@/utils/global"
 import Head from "next/head"
-import { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } from "react"
+import { forwardRef, Ref, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 import styled from "styled-components"
 
 
@@ -101,7 +101,7 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
   const [curPath, setPath] = useState<number | string>('')
   const io = useRef<IntersectionObserver>()
   const footer = useRef<HTMLDivElement | null>(null)
-  const queryPics = async (numOpath: number | string) => {
+  const queryPics = useCallback(async (numOpath: number | string) => {
     let path = ''
     if (typeof numOpath === 'number') {
       path = folders[numOpath as number]?.path
@@ -113,11 +113,11 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
     setPath('')
     setPics(val => ({
       ...val,
-      [path]: res?.data || []
+      [path]: res?.data || val?.[path] || []
     }))
     return res?.data || []
-  }
-  const queryFolder = async () => {
+  }, [folders])
+  const queryFolder = useCallback(async () => {
     const { data } = await queryPicList(path);
     await new Promise(res => {
       setTimeout(async () => {
@@ -126,8 +126,8 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
       })
     })
 
-  }
-  const firstTime = async () => {
+  }, [path])
+  const firstTime = useCallback(async () => {
     page.current += 1
     for (let i = 0; i < size.current; i++) {
       await queryPics(i + size.current * (page.current - 1));
@@ -135,7 +135,7 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
     if (folders.length <= page.current * size.current) {
       setEnd(true)
     }
-  }
+  }, [folders, queryPics])
 
   const delPic = (path: string, item: Pic) => {
     deletePic({ path: item.path, sha: item.sha }).then(res => {
@@ -155,7 +155,7 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
   useEffect(() => {
     if (curPath === '') return
     queryPics(curPath)
-  }, [curPath])
+  }, [curPath, queryPics])
   useEffect(() => {
     if (show) {
       footer.current && io.current?.observe(footer.current)
@@ -165,7 +165,7 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
     }
     if (once.current) return
     once.current = true
-    firstTime().then(() => {
+    queryFolder().then(firstTime).then(() => {
       io.current = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
         if (entries[0].intersectionRatio <= 0) return;
         firstTime()
@@ -174,12 +174,12 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
       });
       footer.current && io.current?.observe(footer.current)
     });
-  }, [show])
+  }, [show, firstTime, queryFolder])
   useEffect(() => {
-    queryFolder()
     stone.isGithubOwner((isowner) => setOwner(isowner))
+    const picFooter = footer.current
     return () => {
-      footer.current && io.current?.unobserve(footer.current);
+      picFooter && io.current?.unobserve(picFooter);
       io.current?.disconnect();
     }
   }, [])
