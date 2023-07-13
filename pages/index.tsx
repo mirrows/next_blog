@@ -320,7 +320,7 @@ export default function Home({ artical }: Props) {
         <meta name="description" content="用于自我学习的博客站点,欢迎大家参观。本站基于vercel+nextjs+githubAPI搭建,比较少写blog,更多的是在自己的网上小窝开发有趣内容。" />
         <meta name="keywords" content="前端,个人博客,david,reed leaves,reedls,博客,知识展示" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         <link rel="dns-prefetch" href="https://cn.bing.com/" />
         <link rel="dns-prefetch" href="https://empty.t-n.top/" />
