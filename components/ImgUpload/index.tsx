@@ -256,15 +256,13 @@ export default function ImgUpload({ clickable = true, children, onStartUpload, p
                     <input
                         className="normal_input url_input"
                         type="text"
+                        placeholder={`${total.length || 0} pics will be uploaded`}
                         value={urlInput}
                         onInput={e => setUrlInput(e.currentTarget.value)}
                         onKeyUp={handlekeyUp}
                     />
                     <SVGIcon className="enter_icon" type="enter" onClick={inputUrl} />
                 </div>
-                {!!total.length && <span className="file_wrap">
-                    {total.length}
-                </span>}
                 {!!total.length && <button className="normal_btn submit_btn" onClick={handleSubmit}>submit</button>}
             </div>
         </DIV>

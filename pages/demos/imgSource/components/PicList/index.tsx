@@ -1,10 +1,8 @@
-import ImgUpload from "@/components/ImgUpload"
 import LazyImage from "@/components/LazyImage"
 import SVGIcon from "@/components/SVGIcon"
 import { deletePic, queryPicList } from "@/req/demos"
 import { Pic, RefType } from "@/types/demos"
 import { stone } from "@/utils/global"
-import Head from "next/head"
 import { forwardRef, Ref, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 import styled from "styled-components"
 
@@ -128,6 +126,10 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
 
   }, [path])
   const firstTime = useCallback(async () => {
+    if(!once.current) {
+      once.current = true
+      await queryFolder();
+    }
     page.current += 1
     for (let i = 0; i < size.current; i++) {
       await queryPics(i + size.current * (page.current - 1));
@@ -135,7 +137,7 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
     if (folders.length <= page.current * size.current) {
       setEnd(true)
     }
-  }, [folders, queryPics])
+  }, [folders.length, queryPics, queryFolder])
 
   const delPic = (path: string, item: Pic) => {
     deletePic({ path: item.path, sha: item.sha }).then(res => {
@@ -157,31 +159,37 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
     queryPics(curPath)
   }, [curPath, queryPics])
   useEffect(() => {
+    if(once.current) return
+    firstTime().then(() => {
+      console.log('before errrr')
+      io.current = new IntersectionObserver(async (entries: IntersectionObserverEntry[]) => {
+        if (entries[0].intersectionRatio <= 0) return;
+        footer.current && io.current?.unobserve(footer.current);
+        await firstTime()
+        footer.current && io.current?.observe(footer.current)
+      }, {
+        rootMargin: '500px 0px'
+      });
+      footer.current && io.current?.observe(footer.current)
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  useEffect(() => {
     if (show) {
       footer.current && io.current?.observe(footer.current)
     } else {
       footer.current && io.current?.unobserve(footer.current);
       return
     }
-    if (once.current) return
-    once.current = true
-    queryFolder().then(firstTime).then(() => {
-      io.current = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
-        if (entries[0].intersectionRatio <= 0) return;
-        firstTime()
-      }, {
-        rootMargin: '500px 0px'
-      });
-      footer.current && io.current?.observe(footer.current)
-    });
-  }, [show, firstTime, queryFolder])
-  useEffect(() => {
-    stone.isGithubOwner((isowner) => setOwner(isowner))
     const picFooter = footer.current
     return () => {
+      console.log('errrr')
       picFooter && io.current?.unobserve(picFooter);
       io.current?.disconnect();
     }
+  }, [show])
+  useEffect(() => {
+    stone.isGithubOwner((isowner) => setOwner(isowner))
   }, [])
   return (<>
     <DIV {...props}>

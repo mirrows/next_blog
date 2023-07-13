@@ -337,8 +337,8 @@ export default function Home({ artical }: Props) {
           >
             {pics.map((pic, ind) => (<SwiperSlide key={ind} className="pic_wrap">
               {
-                ind ? <img src={pic?.url || env.loadingGif || ''} className={"pic_item"} width="1920" height="1080" alt="bing" />
-                : <LazyImage src={pic?.url || env.loadingGif || ''} className={"pic_item"} width="1920" height="1080" alt="bing" />
+                ind ? <LazyImage src={pic?.url || env.loadingGif || ''} className={"pic_item"} width="1920" height="1080" alt="bing" />
+                : <img src={pic?.url || ''} className={"pic_item"} width="1920" height="1080" alt="bing" />
               }
             </SwiperSlide>))}
           </MySwiper>
