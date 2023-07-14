@@ -197,7 +197,7 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
             <div className="timestone">{fold.name}</div>
             <div className="pics_item_wrap">
               {pics[fold.path]?.map((pic, i) => (
-                <div key={pic.name} className="pic_item_wrap">
+                <div key={pic.name} className="pic_item_wrap" style={{ backgroundColor: `#${String(Math.random()).slice(4,7)}` }}>
                   {isOwner && <SVGIcon className="img_del_btn" type="close" onClick={() => delPic(fold.path, pic)} />}
                   <LazyImage className="img_item" src={pic.cdn_url} width="130" height="320" onClick={() => previewPic(pics[fold.path], i)} />
                 </div>
