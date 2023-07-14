@@ -363,7 +363,8 @@ export default function Home({ artical }: Props) {
                       <span>{artical.title}</span>
                     </h3>
                     <div className='artical_detail hide_450'>{artical.body}</div>
-                    <span className='artical_update_time'>—— updated at 
+                    <span className='artical_update_time'>
+                      <span>—— updated at </span>
                       <DateText
                         render={(formattedDate) => <span>{formattedDate}</span>}
                         value={artical.updated_at}
