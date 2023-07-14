@@ -101,6 +101,17 @@ const DIV = styled.div`
         overflow: auto;
         border-radius: 8px;
       }
+      pre {
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        /* 滚动条滑块 */
+        &::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          background: #a5a5a5;
+        }
+      }
   }
   .title_input{
     width: 100%;
