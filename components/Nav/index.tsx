@@ -4,7 +4,7 @@ import { parseObj2queryStr, parsequeryStr2Obj } from "@/utils/common"
 import { stone } from "@/utils/global"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useCallback, useEffect, useState } from "react"
 import styled from "styled-components"
 import SVGIcon from "../SVGIcon"
 import { env } from "process"
@@ -98,14 +98,14 @@ const NavHeader = () => {
     location.href = `https://github.com/login/oauth/authorize${parseObj2queryStr(par)}`
   }
 
-  const queryToken = (code: any) => {
+  const queryToken = useCallback((code: any) => {
     queryGithubToken({ code }).then(res => {
       if (!res.access_token) return console.log('登录失败', res.msg);
       stone.set({ token: res.access_token })
       queryCurUser();
       router.push('/');
     })
-  }
+  }, [router])
   const queryCurUser = () => {
     queryUser().then(data => {
       if (!data.id) return;
@@ -128,7 +128,7 @@ const NavHeader = () => {
       }
       queryCurUser();
     }
-  }, [])
+  }, [queryToken, router.asPath])
 
   return (
     <Div>

@@ -41,7 +41,7 @@ export const listArtical = (number?: number) => {
     path: '/github/listArticals',
     method: 'get',
     headers: stone.data.token ? { Authorization: `token ${stone.data.token}` } : {},
-    ...(String(number) ? { query: {number} } : {})
+    ...(+String(number) + 1 ? { query: {number} } : {})
   })
 }
 

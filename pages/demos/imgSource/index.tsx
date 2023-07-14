@@ -184,7 +184,7 @@ export default function ImgSource({ list }: Props) {
             document[curScrollTop.current.obj].scrollTop = curScrollTop.current.val
             curScrollTop.current.val = 0
         }
-    }, [swiperOpen])
+    }, [swiperOpen, emit])
     return (<>
         <Head>
             <title>延迟图床</title>

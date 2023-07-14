@@ -1,15 +1,25 @@
 import { editArtical, listArtical } from '@/req/main'
 import { Artical } from '@/types/global'
 import Head from 'next/head'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import BlogCreator from '../components/creator'
+import { useRouter } from 'next/router'
 
 type Props = {
   artical: Artical
 }
 
-export default function BlogEdit({ artical: defaultArtical }: Props) {
-  const [artical] = useState<Artical>(defaultArtical)
+export default function BlogEdit() {
+  const [artical, setArtical] = useState<Artical>()
+  const router = useRouter()
+  useEffect(() => {
+    const { number } = router.query
+    if(number) {
+      listArtical(+number).then(res => {
+        res?.data && setArtical(res.data)
+      })
+    }
+  }, [router.query])
   return (
     <>
       <Head>
@@ -19,22 +29,8 @@ export default function BlogEdit({ artical: defaultArtical }: Props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <BlogCreator artical={artical} onSubmit={editArtical} />
+        {artical && <BlogCreator artical={artical} onSubmit={editArtical} />}
       </main>
     </>
   )
-}
-
-
-
-export const getServerSideProps = async (context: any) => {
-  const { number } = context.query
-  const props: Partial<Props> = {}
-  if (+String(number) + 1) {
-    const res = await listArtical(number);
-    if (res?.data) {
-      props.artical = res.data
-    }
-  }
-  return { props }
 }

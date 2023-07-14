@@ -412,7 +412,7 @@ type Props = {
   total?: number
 }
 
-export const getInitialProps = async (context: any) => {
+export const getStaticProps = async (context: any) => {
   const props: Props = {}
   const reqs = [listArtical()];
   const [articals] = await Promise.allSettled(reqs);

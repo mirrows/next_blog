@@ -1,6 +1,6 @@
 import { IPDetail, Preview } from "@/types/global"
 import { stone } from "@/utils/global"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import styled from "styled-components"
 
 type Time = {
@@ -82,7 +82,7 @@ export default function PreviewPannel() {
       secend || dateObj.getSeconds(),
     )
   }
-  const intervalUntilNow = () => {
+  const intervalUntilNow = useCallback(() => {
     const startTime = new Date(2023, 1, 2, 17, 58)
     const now = new Date()
     const lastMonthTotal = Math.round((new Date(
@@ -106,7 +106,7 @@ export default function PreviewPannel() {
     const minute = Math.floor(((now.getTime() - startTime.getTime()) % (24 * 60 * 60 * 1000)) / 1000 / 60) % 60 // 分
     const secend = Math.floor((now.getTime() - startTime.getTime()) / 1000) % 60 // 秒
     return [year, month, date, hour, minute, secend]
-  }
+  }, [])
   useEffect(() => {
     const { preview, stayTime } = stone.data
     preview && setPreview(preview)
@@ -121,7 +121,7 @@ export default function PreviewPannel() {
     return () => {
       clearInterval(timer)
     }
-  }, [])
+  }, [intervalUntilNow])
   return (
     <DIV>
       <div className="items_wrap">

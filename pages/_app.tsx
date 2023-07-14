@@ -83,7 +83,7 @@ export default function App({ Component, pageProps }: AppProps) {
       clearInterval(timer)
       window.removeEventListener('beforeunload', visitorStatistic)
     }
-  }, [])
+  }, [emit, router.events])
   return (
     <>
       <NavHeader />
