@@ -35,7 +35,7 @@ export default function Error() {
       </Head>
       <main>
         <DIV className='wrap'>
-          <LazyImage className='img' width="800" height="600" src='https://empty.t-n.top/pub_lic/2023_07_06/pic1688608901221777.gif' />
+          <img className='img' width="800" height="600" src='https://empty.t-n.top/pub_lic/2023_07_06/pic1688608901221777.gif' alt="404" />
           <Link href="/" className='back' aria-label="back to homepage">BACK</Link>
         </DIV>
       </main>
