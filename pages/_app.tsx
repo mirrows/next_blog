@@ -100,7 +100,7 @@ export default function App({ Component, pageProps }: AppProps) {
       </Suspense> */}
       <Component {...pageProps} />
       <Div>
-        <div className={`ps_mask hidden`}>
+        <div className="ps_mask hidden">
           <div className="loading_wrap">
             <LazyImage width="120" height="167" src="/loading.gif" alt="loading img" />
           </div>

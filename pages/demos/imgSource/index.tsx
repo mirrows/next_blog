@@ -125,7 +125,7 @@ type Props = {
 }
 
 
-export default function ImgSource({ list }: Props) {
+export default function ImgSource() {
     const [personal, setPersonal] = useState(false)
     const [isOwner, setOwner] = useState(false)
     const commonRef = useRef<RefType>(null)
@@ -208,7 +208,7 @@ export default function ImgSource({ list }: Props) {
                     <button className={`switch_btn${personal ? '' : ' active'}`} onClick={() => setPersonal(false)}>COMMON</button>
                     <button className={`switch_btn${personal ? ' active' : ''}`} onClick={() => setPersonal(true)}>PRIVATE</button>
                 </div>}
-                <UploadPicList ref={commonRef} list={list} path="mini/" show={!personal} className={personal ? 'hide' : ''} onPreview={openSwiper} />
+                <UploadPicList ref={commonRef} list={[]} path="mini/" show={!personal} className={personal ? 'hide' : ''} onPreview={openSwiper} />
                 {isOwner && <UploadPicList ref={privateRef} list={[]} path="personal/mini/" show={!!personal} className={personal ? '' : 'hide'} onPreview={openSwiper} />}
 
                 <div
@@ -240,12 +240,3 @@ export default function ImgSource({ list }: Props) {
     </>)
 }
 
-export const getStaticProps = async (context: any) => {
-    const props: Partial<Props> = {}
-    const list = await queryPicList('mini/');
-    if (list?.data) {
-        const data = list.data
-        props.list = data
-    }
-    return { props }
-}
