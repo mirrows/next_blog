@@ -126,10 +126,6 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
 
   }, [path])
   const firstTime = useCallback(async () => {
-    if(!once.current) {
-      once.current = true
-      await queryFolder();
-    }
     page.current += 1
     for (let i = 0; i < size.current; i++) {
       await queryPics(i + size.current * (page.current - 1));
@@ -137,7 +133,7 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
     if (folders.length <= page.current * size.current) {
       setEnd(true)
     }
-  }, [folders.length, queryPics, queryFolder])
+  }, [folders.length, queryPics])
 
   const delPic = (path: string, item: Pic) => {
     deletePic({ path: item.path, sha: item.sha }).then(res => {
@@ -159,7 +155,13 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
     queryPics(curPath)
   }, [curPath, queryPics])
   useEffect(() => {
-    if(once.current) return
+    if(!once.current) {
+      once.current = true
+      queryFolder();
+    }
+  }, [queryFolder])
+  useEffect(() => {
+    if(!folders.length) return
     firstTime().then(() => {
       io.current = new IntersectionObserver(async (entries: IntersectionObserverEntry[]) => {
         if (entries[0].intersectionRatio <= 0) return;
@@ -171,8 +173,13 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
       });
       footer.current && io.current?.observe(footer.current)
     });
+    const picFooter = footer.current
+    return () => {
+      picFooter && io.current?.unobserve(picFooter);
+      io.current?.disconnect();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [folders.length])
   useEffect(() => {
     if (show) {
       footer.current && io.current?.observe(footer.current)
