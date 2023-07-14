@@ -240,3 +240,9 @@ export default function ImgSource() {
     </>)
 }
 
+export const getStaticProps = async (context: any) => {
+    return {
+      props: {}
+    }
+  }
+

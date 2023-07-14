@@ -434,3 +434,9 @@ export default function Lottery () {
         </DIV>
     </>)
 }
+
+export const getStaticProps = async (context: any) => {
+    return {
+      props: {}
+    }
+  }

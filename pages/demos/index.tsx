@@ -102,3 +102,9 @@ export default function Demos() {
     </>
   )
 }
+
+export const getStaticProps = async (context: any) => {
+  return {
+    props: {}
+  }
+}

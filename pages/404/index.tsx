@@ -42,3 +42,9 @@ export default function Error() {
     </>
   )
 }
+
+export const getStaticProps = async (context: any) => {
+  return {
+    props: {}
+  }
+}

@@ -34,3 +34,10 @@ export default function Game2048() {
     </>
   )
 }
+
+
+export const getStaticProps = async (context: any) => {
+  return {
+    props: {}
+  }
+}

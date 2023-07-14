@@ -44,7 +44,6 @@ const nextConfig = {
       },
     ],
   },
-  exportTrailingSlash: true,
   async rewrites() {
     return [
       {
