@@ -162,17 +162,15 @@ function UploadPicList({ list = [], path = 'mini/', show = true, onPreview, ...p
   }, [queryFolder])
   useEffect(() => {
     if(!folders.length) return
-    firstTime().then(() => {
-      io.current = new IntersectionObserver(async (entries: IntersectionObserverEntry[]) => {
-        if (entries[0].intersectionRatio <= 0) return;
-        footer.current && io.current?.unobserve(footer.current);
-        await firstTime()
-        footer.current && io.current?.observe(footer.current)
-      }, {
-        rootMargin: '500px 0px'
-      });
+    io.current = new IntersectionObserver(async (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].intersectionRatio <= 0) return;
+      footer.current && io.current?.unobserve(footer.current);
+      await firstTime()
       footer.current && io.current?.observe(footer.current)
+    }, {
+      rootMargin: '500px 0px'
     });
+    footer.current && io.current?.observe(footer.current)
     const picFooter = footer.current
     return () => {
       picFooter && io.current?.unobserve(picFooter);
