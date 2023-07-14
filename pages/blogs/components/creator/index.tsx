@@ -63,7 +63,7 @@ const DIV = styled.div`
         }
       }
       p{
-        margin: 0;
+        margin: 0 0 10px;
         white-space: pre-wrap;
         line-height: 1.5;
         word-break: break-all;
@@ -81,6 +81,25 @@ const DIV = styled.div`
         min-width: 80px;
         padding: 4px;
         border: 1px solid #000;
+      }
+      ul{
+        margin: 10px 0;
+      }
+      ul li:before{
+        content: "⚪";
+        float: left;
+        margin-right: 10px;
+        font-weight: 900;
+      }
+      code {
+        background-color: #f5f5f5;
+        overflow: auto;
+      }
+      pre {
+        padding: 10px;
+        background-color: #f5f5f5;
+        overflow: auto;
+        border-radius: 8px;
       }
   }
   .title_input{
