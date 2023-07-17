@@ -1,3 +1,4 @@
+import SVGIcon from '@/components/SVGIcon'
 import DateText from '@/components/SsrRender/Timer'
 import { about, addComment, queryComments } from '@/req/about'
 import { Artical, Comment } from '@/types/global'
@@ -147,12 +148,14 @@ const BlogContent = styled.div`
     code {
       background-color: #f5f5f5;
       overflow: auto;
+      color: #000;
     }
     pre {
       padding: 10px;
       background-color: #f5f5f5;
       overflow: auto;
       border-radius: 8px;
+      color: #000;
     }
     pre {
       &::-webkit-scrollbar {
@@ -339,7 +342,7 @@ export default function About({ artical: atl, comments: cmts }: Props) {
             <div className='blog_wrap add_comment'>
               <label htmlFor="comments_input">添加评论</label>
               <div className='operate_wrap'>
-                <img src="/code.svg" className='preview' alt='preview' onClick={handlePreview} />
+                <SVGIcon type="code" className='preview' alt='preview' onClick={handlePreview} />
                 <button className='submit' aria-label='submit comment' onClick={submit}>add comment</button>
               </div>
               <div className='preview_detail_wrap' style={{ display: isPreview ? 'block' : 'none' }}>
